@@ -1,0 +1,103 @@
+﻿@using System;
+@using Microsoft.AspNetCore.Components;
+@using Microsoft.JSInterop;
+@inject IJSRuntime JSRuntime
+
+<h3>Here the editor</h3>
+
+<div>
+    @if (Inline)
+    {
+        <div @ref="Element" id="@Id"></div>
+    }
+    else
+    {
+        <textarea @ref="Element" id="@Id"></textarea>
+    }
+</div>
+
+@code {
+
+    private string _value = "";
+    private bool _ready = false;
+    private ElementReference Element;
+    private Dictionary<string, object> blazorConf;
+
+    [Parameter] public string Id { get; set; } = System.Guid.NewGuid().ToString();
+    [Parameter] public bool Inline { get; set; } = false;
+    [Parameter] public string ScriptSrc { get; set; } = "https://cdn.tiny.cloud/1/no-api-key/tinymce/5/tinymce.min.js";
+    [Parameter] public string InitialValue { get; set; }
+    [Parameter] public string JsConfSrc { get; set; }
+    [Parameter] public Dictionary<string, object> Conf { get; set; } = new Dictionary<string, object>();
+    [Parameter] public string Toolbar { get; set; }
+    [Parameter] public string Plugins { get; set; }
+    [Parameter(CaptureUnmatchedValues = true)] public IDictionary<string, object> AdditionalAttributes { get; set; }
+
+    [Parameter]
+    public string Value
+    {
+      get => _value;
+      set
+      {
+        if (value != null && value != _value)
+        {
+          _value = value;
+          _ = PushValue(value);
+        }
+      }
+    }
+
+    [Parameter] public EventCallback<string> ValueChanged { get; set; }
+
+    [JSInvokable("GetValue")]
+    public Task<string> ReturnValue()
+    {
+      return Task.FromResult(Value);
+    }
+
+    [JSInvokable("UpdateModel")]
+    public void OnChange(string newVal)
+    {
+      ValueChanged.InvokeAsync(newVal);
+    }
+
+    [JSInvokable("Ready")]
+    public void Ready()
+    {
+      _ready = true;
+    }
+
+    protected async Task PushValue(string nextVal)
+    {
+      if (_ready)
+      {
+        await JSRuntime.InvokeVoidAsync("tnymceBlazorWrapper.updateValue", Id, nextVal);
+      }
+    }
+
+    protected override void OnInitialized()
+    {
+      base.OnInitialized();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+      if (firstRender)
+      {
+        blazorConf = new Dictionary<string, object>();
+        blazorConf.Add("inline", Inline);
+        blazorConf.Add("src", ScriptSrc);
+        blazorConf.Add("jsConf", JsConfSrc);
+        blazorConf.Add("toolbar", Toolbar);
+        blazorConf.Add("conf", Conf);
+        // Load the events
+        foreach(KeyValuePair<string, object> kvp in AdditionalAttributes)
+        {
+          System.Diagnostics.Debug.WriteLine($"Found: {kvp.Key}");
+        }
+
+        var dotNetReference = DotNetObjectReference.Create(this);
+        await JSRuntime.InvokeVoidAsync("tinymceBlazorWrapper.init", Element, blazorConf, dotNetReference);
+      }
+    }
+}
