@@ -67,17 +67,14 @@ window.tinymceBlazorWrapper = {
       const global = getGlobal();
       return global && global.tinymce ? global.tinymce : null;
     }
-    const getJsObj = (cConf) => {
-      const jsConf = window[cConf.jsConf];
-      return (jsConf !== null && typeof jsConf === 'object') ? jsConf : {};
+    const getJsObj = (objectPath) => {
+      const parts = (objectPath !== null && typeof objectPath === 'string') ? objectPath.split('.') : [];
+      const jsConf = parts.reduce((acc, current) => {
+        return acc !== undefined ? acc[current] : undefined;
+      }, window);
+      return (jsConf !== undefined && typeof jsConf === 'object') ? jsConf : {};
     };
-    const tinyConf = { ...getJsObj, ...blazorConf.conf };
-    if (blazorConf.toolbar !== null) {
-      tinyConf.toolbar = blazorConf.toolbar;
-    }
-    if (blazorConf.plugins !== null) {
-      tinyConf.plugins = blazorConf.plugins;
-    }
+    const tinyConf = { ...getJsObj(blazorConf.jsConf), ...blazorConf.conf };
     tinyConf.inline = blazorConf.inline;
     tinyConf.target = el;
     tinyConf.setup = (editor) => {
@@ -88,7 +85,7 @@ window.tinymceBlazorWrapper = {
           editor.setContent(value);
         });
       });
-      editor.on('input change undo redo', (e) => {
+      editor.on(blazorConf.modelEvents, (e) => {
         dotNetRef.invokeMethodAsync('UpdateModel', editor.getContent());
       });
     }
@@ -98,9 +95,7 @@ window.tinymceBlazorWrapper = {
     } else {
       if (el && el.ownerDocument) {
         // inject tiny here
-        console.log('loading src ' + blazorConf.src);
         window.tinymceBlazorLoader.load(el.ownerDocument, blazorConf.src, () => {
-          console.log('finished loading');
           getTiny().init(tinyConf);
         });
       }

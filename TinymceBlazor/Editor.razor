@@ -18,86 +18,99 @@
 
 @code {
 
-    private string _value = "";
-    private bool _ready = false;
-    private ElementReference Element;
-    private Dictionary<string, object> blazorConf;
+  private string _value = "";
+  private bool _ready = false;
+  private ElementReference Element;
+  private Dictionary<string, object> blazorConf;
 
-    [Parameter] public string Id { get; set; } = System.Guid.NewGuid().ToString();
-    [Parameter] public bool Inline { get; set; } = false;
-    [Parameter] public string ScriptSrc { get; set; } = "https://cdn.tiny.cloud/1/no-api-key/tinymce/5/tinymce.min.js";
-    [Parameter] public string InitialValue { get; set; }
-    [Parameter] public string JsConfSrc { get; set; }
-    [Parameter] public Dictionary<string, object> Conf { get; set; } = new Dictionary<string, object>();
-    [Parameter] public string Toolbar { get; set; }
-    [Parameter] public string Plugins { get; set; }
-    [Parameter(CaptureUnmatchedValues = true)] public IDictionary<string, object> AdditionalAttributes { get; set; }
+  [Parameter] public string Id { get; set; } = System.Guid.NewGuid().ToString();
+  [Parameter] public bool Inline { get; set; } = false;
+  [Parameter] public string ApiKey { get; set; } = "no-api-key";
+  [Parameter] public string CloudChannel { get; set; } = "5";
+  [Parameter] public string ScriptSrc { get; set; } = "https://cdn.tiny.cloud/1/no-api-key/tinymce/5/tinymce.min.js";
+  [Parameter] public string InitialValue { get; set; }
+  [Parameter] public string JsConfSrc { get; set; }
+  [Parameter] public string ModelEvents { get; set; } = "change input undo redo";
+  [Parameter] public Dictionary<string, object> Conf { get; set; } = new Dictionary<string, object>();
+  [Parameter(CaptureUnmatchedValues = true)] public Dictionary<string, object> AdditionalAttributes { get; set; } = new Dictionary<string, object>();
 
-    [Parameter]
-    public string Value
+  [Parameter]
+  public string Value
+  {
+    get => _value;
+    set
     {
-      get => _value;
-      set
+      if (value != null && value != _value)
       {
-        if (value != null && value != _value)
-        {
-          _value = value;
-          _ = PushValue(value);
-        }
+        _value = value;
+        _ = PushValue(value);
       }
     }
+  }
 
-    [Parameter] public EventCallback<string> ValueChanged { get; set; }
+  [Parameter] public EventCallback<string> ValueChanged { get; set; }
 
-    [JSInvokable("GetValue")]
-    public Task<string> ReturnValue()
+  [JSInvokable("GetValue")]
+  public Task<string> ReturnValue()
+  {
+    return Task.FromResult(Value);
+  }
+
+  [JSInvokable("UpdateModel")]
+  public void OnChange(string newVal)
+  {
+    _value = newVal;
+    ValueChanged.InvokeAsync(newVal);
+  }
+
+  [JSInvokable("Ready")]
+  public void Ready()
+  {
+    _ready = true;
+  }
+
+  protected async Task PushValue(string nextVal)
+  {
+    await JSRuntime.InvokeVoidAsync("tinymceBlazorWrapper.updateValue", Id, nextVal);
+  }
+
+  protected override void OnInitialized()
+  {
+    base.OnInitialized();
+  }
+
+  protected override async Task OnAfterRenderAsync(bool firstRender)
+  {
+    if (firstRender)
     {
-      return Task.FromResult(Value);
-    }
-
-    [JSInvokable("UpdateModel")]
-    public void OnChange(string newVal)
-    {
-      ValueChanged.InvokeAsync(newVal);
-    }
-
-    [JSInvokable("Ready")]
-    public void Ready()
-    {
-      _ready = true;
-    }
-
-    protected async Task PushValue(string nextVal)
-    {
-      if (_ready)
+      blazorConf = new Dictionary<string, object>();
+      blazorConf.Add("inline", Inline);
+      string tinySrc = ScriptSrc != null ? ScriptSrc : $"https://cdn.tiny.cloud/1/{ApiKey}/tinymce/{CloudChannel}/tinymce.min.js";
+      blazorConf.Add("src", tinySrc);
+      blazorConf.Add("jsConf", JsConfSrc);
+      blazorConf.Add("modelEvents", ModelEvents);
+      Dictionary<string, object> merged = Merge(Conf, AdditionalAttributes);
+      blazorConf.Add("conf", merged);
+      // TBD: Load the events
+      @*foreach (KeyValuePair<string, object> kvp in AdditionalAttributes)
       {
-        await JSRuntime.InvokeVoidAsync("tnymceBlazorWrapper.updateValue", Id, nextVal);
-      }
+        System.Diagnostics.Debug.WriteLine($"Found: {kvp.Key} with type {kvp.Value.GetType().ToString()}");
+      }*@
+
+      var dotNetReference = DotNetObjectReference.Create(this);
+      await JSRuntime.InvokeVoidAsync("tinymceBlazorWrapper.init", Element, blazorConf, dotNetReference);
     }
 
-    protected override void OnInitialized()
+  }
+
+  // Or new Dictionary<string, object>() { d1, d2 }
+  private static Dictionary<string, object> Merge(params Dictionary<string, object>[] dictionaries)
+  {
+    Dictionary<string, object> merged = new Dictionary<string, object>();
+    foreach (Dictionary<string, object> d in dictionaries)
     {
-      base.OnInitialized();
+      d.ToList().ForEach(pair => merged[pair.Key] = pair.Value);
     }
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-      if (firstRender)
-      {
-        blazorConf = new Dictionary<string, object>();
-        blazorConf.Add("inline", Inline);
-        blazorConf.Add("src", ScriptSrc);
-        blazorConf.Add("jsConf", JsConfSrc);
-        blazorConf.Add("toolbar", Toolbar);
-        blazorConf.Add("conf", Conf);
-        // Load the events
-        foreach(KeyValuePair<string, object> kvp in AdditionalAttributes)
-        {
-          System.Diagnostics.Debug.WriteLine($"Found: {kvp.Key}");
-        }
-
-        var dotNetReference = DotNetObjectReference.Create(this);
-        await JSRuntime.InvokeVoidAsync("tinymceBlazorWrapper.init", Element, blazorConf, dotNetReference);
-      }
-    }
+    return merged;
+  }
 }
