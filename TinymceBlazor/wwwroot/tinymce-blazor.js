@@ -55,23 +55,24 @@ if (!window.tinymceBlazorLoader) {
   window.tinymceBlazorLoader = CreateScriptLoader();
 }
 
+const getGlobal = () => (typeof window !== 'undefined' ? window : global);
+
+const getTiny = () => {
+  const global = getGlobal();
+  return global && global.tinymce ? global.tinymce : null;
+};
+
 window.tinymceBlazorWrapper = {
   updateValue: (id, value) => {
-    if (tinymce.get(id).getContent() !== value) {
+    if (getTiny() && getTiny().get(id).getContent() !== value) {
       tinymce.get(id).setContent(value);
     }
   },
   init: (el, blazorConf, dotNetRef) => {
-    const getGlobal = () => (typeof window !== 'undefined' ? window : global);
-    const getTiny = () => {
-      const global = getGlobal();
-      return global && global.tinymce ? global.tinymce : null;
-    }
     const getJsObj = (objectPath) => {
-      const parts = (objectPath !== null && typeof objectPath === 'string') ? objectPath.split('.') : [];
-      const jsConf = parts.reduce((acc, current) => {
+      const jsConf = (objectPath !== null && typeof objectPath === 'string') ? objectPath.split('.').reduce((acc, current) => {
         return acc !== undefined ? acc[current] : undefined;
-      }, window);
+      }, window) : undefined;
       return (jsConf !== undefined && typeof jsConf === 'object') ? jsConf : {};
     };
     const tinyConf = { ...getJsObj(blazorConf.jsConf), ...blazorConf.conf };
