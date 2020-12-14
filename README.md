@@ -2,7 +2,7 @@
 
 ## About
 
-This package is a wrapper around [TinyMCE]() to facilitate its use in Blazor applications.
+This package is a wrapper around [TinyMCE](https://github.com/tinymce/tinymce) to facilitate its use in Blazor applications.
 
 ### Issues
 
@@ -59,7 +59,6 @@ The editor component accepts the following properties:
   Id="uuid"
   Inline=false
   CloudChannel="5"
-  InitialValue=""
   Value=""
   JsConfSrc="<path_to_jsObj>"
   Conf="@yourConf"
@@ -122,19 +121,6 @@ Type: bool
 ```
 <Editor
   Inline=true
-/>
-```
-
-#### InitialValue
-
-Initial content of the editor when initialized.
-
-Default value: ""
-Type: string
-##### Example using InitialValue
-```
-<Editor
-  InitialValue="Once upon a time..."
 />
 ```
 
