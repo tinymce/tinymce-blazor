@@ -46,7 +46,7 @@ Or you can refer to the component using its package name
 <TinymceBlazor.Editor />
 ```
 
-For code samples check out this Blazor sample project using the TinyMCE Blazor integration
+For code samples check out this [Blazor sample project using the TinyMCE Blazor integration](https://github.com/jscasca/tinymce-blazor-sample)
 
 ## TinyMCE Blazor technical reference
 
