@@ -20,7 +20,7 @@ Go into your new directory
 
 Install the TinyMCE Blazor integration
 
-`dotnet add package TinymceBlazor`
+`dotnet add package Tinymce.Blazor`
 
 Verify by checking the `ItemGroup` references in `BlazorApp.csproj`
 
@@ -28,7 +28,7 @@ Add the `tinymce-blazor.js` script to your `_Host.cshtml` scripts
 
 ```
   <script src="_framework/blazor.server.js"></script>
-  <script src="_content/TinymceBlazor/tinymce-blazor.js"></script>
+  <script src="_content/TinyMCE.Blazor/tinymce-blazor.js"></script>
   ...
 ```
 
@@ -37,13 +37,13 @@ Add the Editor component to your page
 You can use the component name only with the `using` directive
 
 ```
-@using TinymceBlazor
+@using TinyMCE.Blazor
 <Editor />
 ```
 
 Or you can refer to the component using its package name
 ```
-<TinymceBlazor.Editor />
+<TinyMCE.Blazor.Editor />
 ```
 
 For code samples check out this [Blazor sample project using the TinyMCE Blazor integration](https://github.com/jscasca/tinymce-blazor-sample)
