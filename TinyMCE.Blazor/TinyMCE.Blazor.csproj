@@ -5,17 +5,21 @@
     <Version>0.0.1</Version>
     <Authors>Tiny</Authors>
     <Company>Tiny</Company>
+    <PackageTags>TinyMCE;RTE;Blazor;Component</PackageTags>
+    <Description>This package is a wrapper around TinyMCE to facilitate its use in Blazor applications.</Description>
     <TargetFramework>netstandard2.0</TargetFramework>
     <RazorLangVersion>3.0</RazorLangVersion>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <RepositoryUrl>https://github.com/tinymce/tinymce-blazor</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
+    <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
+    <PackageReleaseNotes>$([System.IO.File]::ReadAllText("$(MSBuildProjectDirectory)/../CHANGELOG.md"))</PackageReleaseNotes>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
-
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Components" Version="3.1.9" />
     <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="3.1.9" />
+    <None Include="../LICENSE.txt" pack="true" PackagePath="" />
   </ItemGroup>
 
 </Project>
