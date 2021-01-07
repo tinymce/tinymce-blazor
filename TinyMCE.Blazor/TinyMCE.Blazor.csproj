@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <PackageId>TinyMCE.Blazor</PackageId>
-    <Version>0.0.1</Version>
+    <Version>0.0.2</Version>
     <Authors>Tiny</Authors>
     <Company>Tiny</Company>
     <PackageTags>TinyMCE;RTE;Blazor;Component</PackageTags>
