@@ -20,10 +20,11 @@ node("bedrock-windows-10") {
     echo "Please add tests..."
   }
 
-  stage("Push to nuget") {
-    echo "Publishing to nuget"
-    withCredentials([string(credentialsId: 'NugetApi', variable: 'TOKEN')]) {
-      bat 'dotnet nuget push "TinyMCE.Blazor\\bin\\Debug\\*.nupkg" --api-key %TOKEN% --source https://api.nuget.org/v3/index.json --skip-duplicate'
+  if (isReleaseBranch()) {
+    stage("Publish") {
+      withCredentials([string(credentialsId: 'NugetApi', variable: 'TOKEN')]) {
+        bat 'dotnet nuget push "TinyMCE.Blazor\\bin\\Debug\\*.nupkg" --api-key %TOKEN% --source https://api.nuget.org/v3/index.json --skip-duplicate'
+      }
     }
   }
 }
