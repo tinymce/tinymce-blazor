@@ -20,7 +20,7 @@ Go into your new directory
 
 Install the TinyMCE Blazor integration
 
-`dotnet add package Tinymce.Blazor`
+`dotnet add package TinyMCE.Blazor`
 
 Verify by checking the `ItemGroup` references in `BlazorApp.csproj`
 
