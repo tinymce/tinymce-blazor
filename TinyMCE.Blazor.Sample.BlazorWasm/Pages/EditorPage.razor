@@ -1,0 +1,13 @@
+﻿@page "/editor"
+
+<h3>Editor</h3>
+
+<Editor @bind-Value=content />
+
+<h4>HTML Content</h4>
+
+<textarea @bind=content @bind:event="oninput"></textarea>
+
+@code {
+    private string content = "<p>Hello world</p>";
+}
