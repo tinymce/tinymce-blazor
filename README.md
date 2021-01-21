@@ -28,7 +28,7 @@ Install the TinyMCE Blazor integration
 
 Verify by checking the `ItemGroup` references in `BlazorApp.csproj`
 
-Add the `tinymce-blazor.js` script to your `_Host.cshtml` scripts
+Add the `tinymce-blazor.js` script to your `Pages/_Host.cshtml` scripts
 
 ```
   <script src="_framework/blazor.server.js"></script>
