@@ -82,7 +82,7 @@ None of the configuration properties are required for TinymceBlazor to work.
 
 #### ApiKey
 
-Tiny Cloud API key. Required for dpeloyments using the Tiny Cloud to provide the TinyMCE editor.
+Tiny Cloud API key. Required for deployments using the Tiny Cloud to provide the TinyMCE editor.
 
 Default value: no-api-key
 Type: string
@@ -110,7 +110,7 @@ Type: string
 
 #### Id
 
-Specified an Id for the editor. Used for retireving the editor instance using the `tinymce.get('ID')` method.
+Specified an Id for the editor. Used for retrieving the editor instance using the `tinymce.get('ID')` method.
 
 Default value: Automatically generated UUID
 Type: string
@@ -161,7 +161,7 @@ In your component:
 
 #### Conf
 
-Specify a set of a properties for the `Tinymce.init` method to initialize the editor.
+Specify a set of properties for the `Tinymce.init` method to initialize the editor.
 
 Default value: null
 Type: Dictionary<string, object>
@@ -184,7 +184,7 @@ Type: Dictionary<string, object>
 
 #### Input binding
 
-The ` @bind-Value` directive can be used to create a two way data binding.
+The ` @bind-Value` directive can be used to create a two-way data binding.
 
 ##### Example using input binding
 
