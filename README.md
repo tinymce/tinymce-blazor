@@ -184,7 +184,7 @@ Type: Dictionary<string, object>
 
 #### Input binding
 
-The ` @bind-Value` directive can be used to create a two-way data binding.
+The `@bind-Value` directive can be used to create a two-way data binding.
 
 ##### Example using input binding
 
