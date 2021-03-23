@@ -12,7 +12,7 @@ Have you found an issue with `tinymce-blazor` or do you have a feature request? 
 
 ### Create a new project and add the TinyMCE.Blazor component
 
-#### On MacOS or Linux
+#### From the command line
 
 Create a new project
 
@@ -36,7 +36,7 @@ Add the `tinymce-blazor.js` script to your `Pages/_Host.cshtml` scripts
   ...
 ```
 
-#### On Windows
+#### Using Visual Studio
 
 On your Visual Studio select `New Project` and `Blazor Server App` template.
 
