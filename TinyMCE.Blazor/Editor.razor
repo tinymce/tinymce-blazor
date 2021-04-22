@@ -1,6 +1,8 @@
 ﻿@using System;
 @using Microsoft.AspNetCore.Components;
 @using Microsoft.JSInterop;
+
+@implements IDisposable
 @inject IJSRuntime JSRuntime
 
 <div>
@@ -17,9 +19,10 @@
 @code {
 
   private string _value = "";
-  private bool _ready = false;
+  private bool _initialized = false;
   private ElementReference Element;
   private Dictionary<string, object> blazorConf;
+  private DotNetObjectReference<Editor> dotNetRef;
 
   [Parameter] public string Id { get; set; } = System.Guid.NewGuid().ToString();
   [Parameter] public bool Inline { get; set; } = false;
@@ -61,22 +64,11 @@
     ValueChanged.InvokeAsync(newVal);
   }
 
-  [JSInvokable("Ready")]
-  public void Ready()
-  {
-    _ready = true;
-  }
-
   protected async Task PushValue(string nextVal)
   {
     await JSRuntime.InvokeVoidAsync("tinymceBlazorWrapper.updateValue", Id, nextVal);
   }
-
-  protected override void OnInitialized()
-  {
-    base.OnInitialized();
-  }
-
+    
   protected override async Task OnAfterRenderAsync(bool firstRender)
   {
     if (firstRender)
@@ -90,15 +82,41 @@
       Dictionary<string, object> merged = Merge(Conf, AdditionalAttributes);
       blazorConf.Add("conf", merged);
       // TBD: Load the events
-      @*foreach (KeyValuePair<string, object> kvp in AdditionalAttributes)
+        @*foreach (KeyValuePair<string, object> kvp in AdditionalAttributes)
       {
         System.Diagnostics.Debug.WriteLine($"Found: {kvp.Key} with type {kvp.Value.GetType().ToString()}");
       }*@
 
-      var dotNetReference = DotNetObjectReference.Create(this);
-      await JSRuntime.InvokeVoidAsync("tinymceBlazorWrapper.init", Element, blazorConf, dotNetReference);
+      dotNetRef = DotNetObjectReference.Create(this);
+      await JSRuntime.InvokeVoidAsync("tinymceBlazorWrapper.init", Element, blazorConf, dotNetRef);
+      _initialized = true;
     }
 
+  }
+
+  public void Dispose()
+  {
+    //IAsyncDisposable is supported from .net5
+    _ = DisposeAsync();
+  }
+
+  public async Task DisposeAsync()
+  {
+    dotNetRef?.Dispose();
+    if (_initialized) {
+      var task = JSRuntime.InvokeVoidAsync("tinymceBlazorWrapper.destroy", Element, Id);
+      try
+      {
+        await task;
+      }
+      catch
+      {
+        if ( !task.IsCanceled )
+        {
+          throw;
+        }
+      }
+    }
   }
 
   // Or new Dictionary<string, object>() { d1, d2 }

@@ -64,7 +64,7 @@ const getTiny = () => {
 
 window.tinymceBlazorWrapper = {
   updateValue: (id, value) => {
-    if (getTiny() && getTiny().get(id).getContent() !== value) {
+    if (getTiny() && getTiny().get(id) && getTiny().get(id).getContent() !== value) {
       tinymce.get(id).setContent(value);
     }
   },
@@ -79,7 +79,6 @@ window.tinymceBlazorWrapper = {
     tinyConf.inline = blazorConf.inline;
     tinyConf.target = el;
     tinyConf.setup = (editor) => {
-      dotNetRef.invokeMethodAsync('Ready');
       editor.on('init', (e) => {
         // set the initial value on init
         dotNetRef.invokeMethodAsync('GetValue').then(value => {
@@ -100,6 +99,11 @@ window.tinymceBlazorWrapper = {
           getTiny().init(tinyConf);
         });
       }
+    }
+  },
+  destroy: (el, id) => {
+    if (getTiny() && getTiny().get(id)) {
+      getTiny().get(id).remove();
     }
   }
 }
