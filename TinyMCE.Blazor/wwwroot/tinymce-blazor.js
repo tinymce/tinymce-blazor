@@ -37,7 +37,7 @@ const CreateScriptLoader = () => {
       cb();
     } else {
       state.listeners.push(cb);
-      if (!doc.getElementById(state.sriptId)) {
+      if (!doc.getElementById(state.scriptId)) {
         injectScript(state.scriptId, doc, url, () => {
           state.listeners.forEach((fn) => fn());
           state.scriptLoaded = true;
