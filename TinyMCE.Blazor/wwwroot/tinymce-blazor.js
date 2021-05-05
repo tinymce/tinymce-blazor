@@ -62,13 +62,49 @@ const getTiny = () => {
   return global && global.tinymce ? global.tinymce : null;
 };
 
-window.tinymceBlazorWrapper = {
-  updateValue: (id, value) => {
-    if (getTiny() && getTiny().get(id).getContent() !== value) {
-      tinymce.get(id).setContent(value);
+const updateVal = (id, val) => {
+  if (getTiny() && getTiny().get(id).getContent() !== val) {
+    tinymce.get(id).setContent(val);
+  }
+};
+
+// Using the JSinterop we can assume the calls are in order, if this changes update the chunkMap impl
+const chunkMap = (() => {
+  const map = new WeakMap();
+  const next = (streamId, edId, index, val, size) => {
+    const acc = (map.has(streamId) ? map.get(streamId) : []).push(val);
+    if (index === size) {
+      updateVal(edId, acc.join(''));
+      map.delete(streamId);
+    } else {
+      map.set(streamId, acc)
     }
+  };
+
+  return {
+    push: next
+  };
+})();
+
+window.tinymceBlazorWrapper = {
+  updateValue: (id, streamId, value, index, chunks) => {
+    console.log('rcvd chunk: ', value, index, chunks);
+    chunkMap.push(streamId, id, value, index, chunks);
+    
   },
   init: (el, blazorConf, dotNetRef) => {
+    const chunkSize = 20;
+    const update = (format, content) => {
+      const updatefn = format === 'text' ? 'UpdateText' : 'UpdateModel';
+      const chunks = Math.floor(content.length / chunkSize) + 1;
+      const streamId = (Date.now() % 1000000) + '';
+      console.log('chunking: ', content);
+      for (let i = 0; i < chunks; i++) {
+        const chunk = content.substring(chunkSize * i, chunkSize * (i + 1));
+        console.log('sending chunk: ', chunk);
+        dotNetRef.invokeMethodAsync(updatefn, streamId, i + 1, chunk, chunks);
+      }
+    };
     const getJsObj = (objectPath) => {
       const jsConf = (objectPath !== null && typeof objectPath === 'string') ? objectPath.split('.').reduce((acc, current) => {
         return acc !== undefined ? acc[current] : undefined;
@@ -76,18 +112,20 @@ window.tinymceBlazorWrapper = {
       return (jsConf !== undefined && typeof jsConf === 'object') ? jsConf : {};
     };
     const tinyConf = { ...getJsObj(blazorConf.jsConf), ...blazorConf.conf };
+    console.log('blazor conf: ', blazorConf);
     tinyConf.inline = blazorConf.inline;
     tinyConf.target = el;
     tinyConf.setup = (editor) => {
       dotNetRef.invokeMethodAsync('Ready');
       editor.on('init', (e) => {
-        // set the initial value on init
         dotNetRef.invokeMethodAsync('GetValue').then(value => {
           editor.setContent(value);
         });
       });
       editor.on(blazorConf.modelEvents, (e) => {
-        dotNetRef.invokeMethodAsync('UpdateModel', editor.getContent());
+        update('text', editor.getContent({ format: 'text' }));
+        update('html', editor.getContent());
+        //dotNetRef.invokeMethodAsync('UpdateModel', editor.getContent());
       });
     }
 

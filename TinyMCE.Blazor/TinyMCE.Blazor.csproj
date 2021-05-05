@@ -17,13 +17,19 @@
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
 
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <NoStdLib>true</NoStdLib>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <NoStdLib>true</NoStdLib>
+  </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Components" Version="3.1.9"  Condition="'$(TargetFramework)' == 'netstandard2.0'" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="3.1.9" Condition="'$(TargetFramework)' == 'netstandard2.0'"/>
-    <PackageReference Include="Microsoft.AspNetCore.Components" Version="5.0.4"  Condition="'$(TargetFramework)' == 'net5.0'" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="5.0.4" Condition="'$(TargetFramework)' == 'net5.0'"/>
+    <PackageReference Include="Microsoft.AspNetCore.Components" Version="3.1.9" Condition="'$(TargetFramework)' == 'netstandard2.0'" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="3.1.9" Condition="'$(TargetFramework)' == 'netstandard2.0'" />
+    <PackageReference Include="Microsoft.AspNetCore.Components" Version="5.0.4" Condition="'$(TargetFramework)' == 'net5.0'" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="5.0.4" Condition="'$(TargetFramework)' == 'net5.0'" />
     <None Include="../LICENSE.txt" pack="true" PackagePath="" />
-    <None Include="../tiny-icon.png" Pack="true" PackagePath=""/>
+    <None Include="../tiny-icon.png" Pack="true" PackagePath="" />
   </ItemGroup>
 
 </Project>

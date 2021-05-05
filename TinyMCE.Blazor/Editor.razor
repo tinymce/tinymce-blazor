@@ -1,4 +1,5 @@
 ﻿@using System;
+@using System.Collections.Generic;
 @using Microsoft.AspNetCore.Components;
 @using Microsoft.JSInterop;
 @inject IJSRuntime JSRuntime
@@ -17,6 +18,9 @@
 @code {
 
   private string _value = "";
+  private string _text = "";
+  private Dictionary<string, string> streamMap = new Dictionary<string, string>();
+  private int _chunkSize = 10000;
   private bool _ready = false;
   private ElementReference Element;
   private Dictionary<string, object> blazorConf;
@@ -32,8 +36,7 @@
   [Parameter] public Dictionary<string, object> Conf { get; set; } = new Dictionary<string, object>();
   [Parameter(CaptureUnmatchedValues = true)] public Dictionary<string, object> AdditionalAttributes { get; set; } = new Dictionary<string, object>();
 
-  [Parameter]
-  public string Value
+  [Parameter] public string Value
   {
     get => _value;
     set
@@ -48,6 +51,14 @@
 
   [Parameter] public EventCallback<string> ValueChanged { get; set; }
 
+  [Parameter] public string Text
+  {
+    get => _text;
+    set {}
+  }
+
+  [Parameter] public EventCallback<string> TextChanged { get; set; }
+
   [JSInvokable("GetValue")]
   public Task<string> ReturnValue()
   {
@@ -55,10 +66,36 @@
   }
 
   [JSInvokable("UpdateModel")]
-  public void OnChange(string newVal)
+  public void OnChangeContent(string streamId, int index, string val, int size)
   {
-    _value = newVal;
-    ValueChanged.InvokeAsync(newVal);
+    PushChange(streamId, index, val, size, (content) => {
+      _value = content;
+      ValueChanged.InvokeAsync(content);
+    });
+  }
+
+  [JSInvokable("UpdateText")]
+  public void OnChangeText(string streamId, int index, string text, int size)
+  {
+    PushChange(streamId, index, text, size, (textContent) => {
+      _text = textContent;
+      TextChanged.InvokeAsync(textContent);
+    });
+  }
+
+  public void PushChange(string streamId, int index, string content, int size, Action<string> callback) {
+    string acc = "";
+    bool remove = streamMap.TryGetValue(streamId, out acc);
+    acc = acc + content;
+    if (index == size)
+    {
+      if (remove) { streamMap.Remove(streamId); }
+      callback(acc);
+    }
+    else
+    {
+      streamMap[streamId] = acc;
+    }
   }
 
   [JSInvokable("Ready")]
@@ -69,7 +106,12 @@
 
   protected async Task PushValue(string nextVal)
   {
-    await JSRuntime.InvokeVoidAsync("tinymceBlazorWrapper.updateValue", Id, nextVal);
+    int chunks = (nextVal.Length / _chunkSize) + 1;
+    string streamId = String.Format("{0:d9}", (DateTime.Now.Ticks/10)%1000000000);
+    for (int i = 0; i < chunks; i++) {
+      string chunk = nextVal.Substring(_chunkSize * i, _chunkSize);
+      await JSRuntime.InvokeVoidAsync("tinymceBlazorWrapper.updateValue", Id, streamId, chunk, i + 1, chunks);
+    }
   }
 
   protected override void OnInitialized()
@@ -90,10 +132,10 @@
       Dictionary<string, object> merged = Merge(Conf, AdditionalAttributes);
       blazorConf.Add("conf", merged);
       // TBD: Load the events
-      @*foreach (KeyValuePair<string, object> kvp in AdditionalAttributes)
+      foreach (KeyValuePair<string, object> kvp in AdditionalAttributes)
       {
         System.Diagnostics.Debug.WriteLine($"Found: {kvp.Key} with type {kvp.Value.GetType().ToString()}");
-      }*@
+      }
 
       var dotNetReference = DotNetObjectReference.Create(this);
       await JSRuntime.InvokeVoidAsync("tinymceBlazorWrapper.init", Element, blazorConf, dotNetReference);
