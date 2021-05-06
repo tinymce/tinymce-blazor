@@ -19,6 +19,9 @@
 @code {
 
   private string _value = "";
+  private string _text = "";
+  private Dictionary<string, string> streamMap = new Dictionary<string, string>();
+  private int _chunkSize = 1000000;
   private bool _initialized = false;
   private ElementReference Element;
   private Dictionary<string, object> blazorConf;
@@ -51,6 +54,15 @@
 
   [Parameter] public EventCallback<string> ValueChanged { get; set; }
 
+  [Parameter]
+  public string Text
+  {
+    get => _text;
+    set {}
+  }
+
+  [Parameter] public EventCallback<string> TextChanged { get; set; }
+
   [JSInvokable("GetValue")]
   public Task<string> ReturnValue()
   {
@@ -58,15 +70,45 @@
   }
 
   [JSInvokable("UpdateModel")]
-  public void OnChange(string newVal)
+  public void OnChangeContent(string streamId, int index, string val, int size)
   {
-    _value = newVal;
-    ValueChanged.InvokeAsync(newVal);
+    PushUpdate(streamId, index, val, size, (content) => {
+      _value = content;
+      ValueChanged.InvokeAsync(content);
+    });
+  }
+
+  [JSInvokable("UpdateText")]
+  public void OnChangeText(string streamId, int index, string val, int size)
+  {
+    PushUpdate(streamId, index, val, size, (content) => {
+      _text = content;
+      TextChanged.InvokeAsync(content);
+    });
+  }
+
+  public void PushUpdate(string streamId, int index, string content, int size, Action<string> callback) {
+    string acc = "";
+    bool remove = streamMap.TryGetValue(streamId, out acc);
+    acc = acc + content;
+    if (index == size) {
+      if (remove) { streamMap.Remove(streamId); }
+      callback(acc);
+    }
+    else
+    {
+      streamMap[streamId] = acc;
+    }
   }
 
   protected async Task PushValue(string nextVal)
   {
-    await JSRuntime.InvokeVoidAsync("tinymceBlazorWrapper.updateValue", Id, nextVal);
+    int chunks = (nextVal.Length / _chunkSize) + 1;
+    string streamId = String.Format("{0:d9}", (DateTime.Now.Ticks / 10) % 1000000000);
+    for (int i = 0; i < chunks; i++) {
+      string chunk = nextVal.Substring( _chunkSize * i, nextVal.Length > (_chunkSize * i) ? (nextVal.Length - (_chunkSize * i)) : _chunkSize);
+      await JSRuntime.InvokeVoidAsync("tinymceBlazorWrapper.updateValue", Id, streamId, chunk, i + 1, chunks);
+    }
   }
     
   protected override async Task OnAfterRenderAsync(bool firstRender)

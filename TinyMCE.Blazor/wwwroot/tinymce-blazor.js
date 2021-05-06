@@ -62,13 +62,43 @@ const getTiny = () => {
   return global && global.tinymce ? global.tinymce : null;
 };
 
-window.tinymceBlazorWrapper = {
-  updateValue: (id, value) => {
-    if (getTiny() && getTiny().get(id) && getTiny().get(id).getContent() !== value) {
-      tinymce.get(id).setContent(value);
+const updateTinyVal = (id, val) => {
+  if (getTiny() && getTiny().get(id).getContent() !== val) {
+    getTiny().get(id).setContent(val);
+  }
+};
+
+const chunkMap = (() => {
+  const map = new Map();
+  const next = (streamId, editorId, val, index, size) => {
+    const acc = (map.has(streamId) ? map.get(streamId) : "") + val;
+    if (index === size) {
+      updateTinyVal(editorId, acc);
+      map.delete(streamId);
+    } else {
+      map.set(streamId, acc);
     }
+  };
+  return {
+    push: next
+  };
+})();
+
+window.tinymceBlazorWrapper = {
+  updateValue: (id, streamId, value, index, chunks) => {
+    chunkMap.push(streamId, id, value, index, chunks);
   },
   init: (el, blazorConf, dotNetRef) => {
+    const chunkSize = 20;
+    const update = (format, content) => {
+      const updateFn = format === 'text' ? 'UpdateText' : 'UpdateModel';
+      const chunks = Math.floor(content.length / chunkSize) + 1;
+      const streamId = (Date.now() % 100000) + '';
+      for (let i = 0; i < chunks; i++) {
+        const chunk = content.substring(chunkSize * i, chunkSize * (i + 1));
+        dotNetRef.invokeMethodAsync(updateFn, streamId, i + 1, chunk, chunks);
+      }
+    };
     const getJsObj = (objectPath) => {
       const jsConf = (objectPath !== null && typeof objectPath === 'string') ? objectPath.split('.').reduce((acc, current) => {
         return acc !== undefined ? acc[current] : undefined;
@@ -85,8 +115,10 @@ window.tinymceBlazorWrapper = {
           editor.setContent(value);
         });
       });
+      editor.on('setcontent', (e) => update('text', editor.getContent({ format: 'text' })));
       editor.on(blazorConf.modelEvents, (e) => {
-        dotNetRef.invokeMethodAsync('UpdateModel', editor.getContent());
+        update('html', editor.getContent());
+        update('text', editor.getContent({ format: 'text' }));
       });
     }
 
