@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - Typo triggering multiple script downloads
+- Fix reference when reseting to null
 
 ## 0.0.3 - 2021-01-11
 ### Changed
