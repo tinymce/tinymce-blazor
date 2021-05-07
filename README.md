@@ -58,6 +58,8 @@ Or you can refer to the component using its package name
 <TinyMCE.Blazor.Editor />
 ```
 
+To use the Editor output you can access the `Value` property or the read-only `Text` property.
+
 For code samples check out this [Blazor sample project using the TinyMCE Blazor integration](https://github.com/jscasca/tinymce-blazor-sample)
 
 ## TinyMCE Blazor technical reference
@@ -199,3 +201,6 @@ The `@bind-Value` directive can be used to create a two-way data binding.
   private string content = "<p>Hello world</p>";
 }
 ```
+#### Binding Text output
+
+Starting from v0.0.4 you can use the `@bind-Text` property to hook the text output of the editor into a variable
