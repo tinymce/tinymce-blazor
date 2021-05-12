@@ -108,6 +108,7 @@ window.tinymceBlazorWrapper = {
     const tinyConf = { ...getJsObj(blazorConf.jsConf), ...blazorConf.conf };
     tinyConf.inline = blazorConf.inline;
     tinyConf.target = el;
+    tinyConf._setup = tinyConf.setup;
     tinyConf.setup = (editor) => {
       editor.on('init', (e) => {
         // set the initial value on init
@@ -120,6 +121,9 @@ window.tinymceBlazorWrapper = {
         update('html', editor.getContent());
         update('text', editor.getContent({ format: 'text' }));
       });
+      if (tinyConf._setup && typeof tinyConf._setup === 'function') {
+        tinyConf._setup(editor);
+      }
     }
 
     if (getTiny()) {
