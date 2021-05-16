@@ -139,6 +139,7 @@ window.tinymceBlazorWrapper = {
   },
   destroy: (el, id) => {
     if (getTiny() && getTiny().get(id)) {
+      getTiny().get(id).off();
       getTiny().get(id).remove();
     }
   }
