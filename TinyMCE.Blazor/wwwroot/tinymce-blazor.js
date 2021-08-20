@@ -85,6 +85,9 @@ const chunkMap = (() => {
 })();
 
 window.tinymceBlazorWrapper = {
+  updateMode: (id, disable) => {
+    getTiny().get(id).setMode(disable ? 'readonly' : 'design');
+  },
   updateValue: (id, streamId, value, index, chunks) => {
     chunkMap.push(streamId, id, value, index, chunks);
   },
@@ -107,6 +110,7 @@ window.tinymceBlazorWrapper = {
     };
     const tinyConf = { ...getJsObj(blazorConf.jsConf), ...blazorConf.conf };
     tinyConf.inline = blazorConf.inline;
+    tinyConf.readonly = blazorConf.disabled;
     tinyConf.target = el;
     tinyConf._setup = tinyConf.setup;
     tinyConf.setup = (editor) => {
