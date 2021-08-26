@@ -74,6 +74,7 @@ The editor component accepts the following properties:
   Inline=false
   CloudChannel="5"
   Value=""
+  Disable=false
   JsConfSrc="<path_to_jsObj>"
   Conf="@yourConf"
   ApiKey="your-api-key"
@@ -136,6 +137,21 @@ Type: bool
 <Editor
   Inline=true
 />
+```
+
+#### Disable
+
+Set the editor to readonly mode.
+
+Default value: false
+Type: bool
+
+##### Example using Disable
+```
+<Editor
+  Disable=@disable
+/>
+<button @onclick="@(() => disable = !disable)">Toggle</button>
 ```
 
 #### JsConfSrc

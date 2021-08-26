@@ -20,6 +20,8 @@
 
   private string _value = "";
   private string _text = "";
+  private bool _setDisable = false;
+  private bool _disable = false;
   private Dictionary<string, string> streamMap = new Dictionary<string, string>();
   private int _chunkSize = 30000;
   private bool _initialized = false;
@@ -63,6 +65,21 @@
   }
 
   [Parameter] public EventCallback<string> TextChanged { get; set; }
+
+  [Parameter]
+  public bool Disable
+  {
+    get => _disable;
+    set
+    {
+      _setDisable = true;
+      if (_disable != value)
+      {
+        _disable = value;
+        _ = ChangeMode(value);
+      }
+    }
+  }
 
   [JSInvokable("GetValue")]
   public Task<string> ReturnValue()
@@ -111,6 +128,11 @@
       await JSRuntime.InvokeVoidAsync("tinymceBlazorWrapper.updateValue", Id, streamId, chunk, i + 1, chunks);
     }
   }
+
+  protected async Task ChangeMode(bool disabled)
+  {
+    await JSRuntime.InvokeVoidAsync("tinymceBlazorWrapper.updateMode", Id, disabled);
+  }
     
   protected override async Task OnAfterRenderAsync(bool firstRender)
   {
@@ -124,6 +146,11 @@
       blazorConf.Add("modelEvents", ModelEvents);
       Dictionary<string, object> merged = Merge(Conf, AdditionalAttributes);
       blazorConf.Add("conf", merged);
+      if (!_setDisable && merged.ContainsKey("readonly"))
+      {
+        _disable = merged["readonly"] is bool ? (bool)merged["readonly"] : false;
+      }
+      blazorConf.Add("disabled", Disable);
       // TBD: Load the events
         @*foreach (KeyValuePair<string, object> kvp in AdditionalAttributes)
       {
