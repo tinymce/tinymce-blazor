@@ -5,7 +5,7 @@
 @implements IDisposable
 @inject IJSRuntime JSRuntime
 
-<div>
+<div class="@ClassName">
     @if (Inline)
     {
         <div @ref="Element" id="@Id"></div>
@@ -29,6 +29,7 @@
   private Dictionary<string, object> blazorConf;
   private DotNetObjectReference<Editor> dotNetRef;
 
+  [Parameter] public string ClassName { get; set; } = "tinymce-wrapper";
   [Parameter] public string Id { get; set; } = System.Guid.NewGuid().ToString();
   [Parameter] public bool Inline { get; set; } = false;
   [Parameter] public string ApiKey { get; set; } = "no-api-key";
