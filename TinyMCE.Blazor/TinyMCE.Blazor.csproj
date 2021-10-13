@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <PackageId>TinyMCE.Blazor</PackageId>
-    <Version>0.0.7</Version>
+    <Version>0.0.8</Version>
     <Authors>Tiny</Authors>
     <Company>Tiny</Company>
     <PackageTags>TinyMCE;RTE;Blazor;Component;Rich;Text;Editor;rich-text-editor</PackageTags>
