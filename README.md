@@ -78,6 +78,7 @@ The editor component accepts the following properties:
   JsConfSrc="<path_to_jsObj>"
   Conf="@yourConf"
   ApiKey="your-api-key"
+  ClassName="tinymce-wrapper"
 />
 ```
 
@@ -196,6 +197,18 @@ Type: Dictionary<string, object>
     {"width", 400}
   };
 }
+```
+
+#### ClassName
+
+Specify the class for the Editor container `div` in the component. This `div` is the parent of the Editor and adding styles to it will not add styles to the editor.
+
+##### Example using ClassName
+
+```
+<Editor ClassName="my-editor-container" />
+
+<Editor ClassName="@((isEditorActive) ? "active-editor-div" : "default-editor-div")" />
 ```
 
 ### Component binding
