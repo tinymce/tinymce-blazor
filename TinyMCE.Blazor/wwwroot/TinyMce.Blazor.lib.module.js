@@ -120,6 +120,12 @@ window.tinymceBlazorWrapper = {
           editor.setContent(value);
         });
       });
+      editor.on('change', (e) => {
+        dotNetRef.invokeMethodAsync('OnChange');
+      })
+      editor.on('input', (e) => {
+        dotNetRef.invokeMethodAsync('OnInput');
+      })
       editor.on('setcontent', (e) => update('text', editor.getContent({ format: 'text' })));
       editor.on(blazorConf.modelEvents, (e) => {
         update('html', editor.getContent());

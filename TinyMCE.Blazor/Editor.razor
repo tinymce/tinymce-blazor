@@ -1,5 +1,7 @@
 ﻿@using System;
+@using System.Linq.Expressions
 @using Microsoft.AspNetCore.Components;
+@using Microsoft.AspNetCore.Components.Forms
 @using Microsoft.JSInterop;
 
 @implements IDisposable
@@ -18,186 +20,307 @@
 
 @code {
 
-  private string _value = "";
-  private string _text = "";
-  private bool _setDisable = false;
-  private bool _disable = false;
-  private Dictionary<string, string> streamMap = new Dictionary<string, string>();
-  private int _chunkSize = 30000;
-  private bool _initialized = false;
-  private ElementReference Element;
-  private Dictionary<string, object> blazorConf;
-  private DotNetObjectReference<Editor> dotNetRef;
+    private string _value = "";
+    private string _text = "";
+    private bool _setDisable = false;
+    private bool _disable = false;
+    private Dictionary<string, string> streamMap = new Dictionary<string, string>();
+    private int _chunkSize = 30000;
+    private bool _initialized = false;
+    private ElementReference Element;
+    private Dictionary<string, object> blazorConf;
+    private DotNetObjectReference<Editor> dotNetRef;
+    private string _userClassName = "tinymce-wrapper";
 
-  [Parameter] public string ClassName { get; set; } = "tinymce-wrapper";
-  [Parameter] public string Id { get; set; } = System.Guid.NewGuid().ToString();
-  [Parameter] public bool Inline { get; set; } = false;
-  [Parameter] public string ApiKey { get; set; } = "no-api-key";
-  [Parameter] public string CloudChannel { get; set; } = "5";
-  [Parameter] public string ScriptSrc { get; set; }
-  [Parameter] public string InitialValue { get; set; }
-  [Parameter] public string JsConfSrc { get; set; }
-  [Parameter] public string ModelEvents { get; set; } = "change input undo redo";
-  [Parameter] public Dictionary<string, object> Conf { get; set; } = new Dictionary<string, object>();
-  [Parameter(CaptureUnmatchedValues = true)] public Dictionary<string, object> AdditionalAttributes { get; set; } = new Dictionary<string, object>();
+    [CascadingParameter]
+    public EditContext EditContext { get; set; }
 
-  [Parameter]
-  public string Value
-  {
-    get => _value;
-    set
+    [Parameter]
+    public Expression<Func<string>>? For { get; set; }
+
+    [Parameter]
+    public bool ValidateOnInput { get; set; } = false;
+
+    [Parameter]
+    public string ClassName { get; set; } = "tinymce-wrapper";
+
+    [Parameter]
+    public string Id { get; set; } = System.Guid.NewGuid().ToString();
+
+    [Parameter]
+    public bool Inline { get; set; } = false;
+
+    [Parameter]
+    public string ApiKey { get; set; } = "no-api-key";
+
+    [Parameter]
+    public string CloudChannel { get; set; } = "5";
+
+    [Parameter]
+    public string ScriptSrc { get; set; }
+
+    [Parameter]
+    public string InitialValue { get; set; }
+
+    [Parameter]
+    public string JsConfSrc { get; set; }
+
+    [Parameter]
+    public string ModelEvents { get; set; } = "change input undo redo";
+
+    [Parameter]
+    public Dictionary<string, object> Conf { get; set; } = new Dictionary<string, object>();
+
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object> AdditionalAttributes { get; set; } = new Dictionary<string, object>();
+
+
+    [Parameter]
+    public string Value
     {
-      string newVal = value == null ? "" : value;
-      if (newVal != _value)
-      {
-        _value = newVal;
-        _ = PushValue(newVal);
-      }
+        get => _value;
+        set
+        {
+            string newVal = value == null ? "" : value;
+            if (newVal != _value)
+            {
+                _value = newVal;
+                _ = PushValue(newVal);
+            }
+        }
     }
-  }
 
-  [Parameter] public EventCallback<string> ValueChanged { get; set; }
+    [Parameter]
+    public EventCallback<string> ValueChanged { get; set; }
 
-  [Parameter]
-  public string Text
-  {
-    get => _text;
-    set {}
-  }
-
-  [Parameter] public EventCallback<string> TextChanged { get; set; }
-
-  [Parameter]
-  public bool Disable
-  {
-    get => _disable;
-    set
+    [Parameter]
+    public string Text
     {
-      _setDisable = true;
-      if (_disable != value)
-      {
-        _disable = value;
-        _ = ChangeMode(value);
-      }
+        get => _text;
+        set { }
     }
-  }
 
-  [JSInvokable("GetValue")]
-  public Task<string> ReturnValue()
-  {
-    return Task.FromResult(Value);
-  }
+    [Parameter]
+    public EventCallback<string> TextChanged { get; set; }
 
-  [JSInvokable("UpdateModel")]
-  public void OnChangeContent(string streamId, int index, string val, int size)
-  {
-    PushUpdate(streamId, index, val, size, (content) => {
-      _value = content;
-      ValueChanged.InvokeAsync(content);
-    });
-  }
-
-  [JSInvokable("UpdateText")]
-  public void OnChangeText(string streamId, int index, string val, int size)
-  {
-    PushUpdate(streamId, index, val, size, (content) => {
-      _text = content;
-      TextChanged.InvokeAsync(content);
-    });
-  }
-
-  public void PushUpdate(string streamId, int index, string content, int size, Action<string> callback) {
-    string acc = "";
-    bool remove = streamMap.TryGetValue(streamId, out acc);
-    acc = acc + content;
-    if (index == size) {
-      if (remove) { streamMap.Remove(streamId); }
-      callback(acc);
-    }
-    else
+    [Parameter]
+    public bool Disable
     {
-      streamMap[streamId] = acc;
+        get => _disable;
+        set
+        {
+            _setDisable = true;
+            if (_disable != value)
+            {
+                _disable = value;
+                _ = ChangeMode(value);
+            }
+        }
     }
-  }
 
-  protected async Task PushValue(string nextVal)
-  {
-    int chunks = (nextVal.Length / _chunkSize) + 1;
-    string streamId = String.Format("{0:d9}", (DateTime.Now.Ticks / 10) % 1000000000);
-    for (int i = 0; i < chunks; i++) {
-      string chunk = nextVal.Substring( _chunkSize * i, nextVal.Length < (_chunkSize * ( i + 1)) ? (nextVal.Length - (_chunkSize * i)) : _chunkSize);
-      await JSRuntime.InvokeVoidAsync("tinymceBlazorWrapper.updateValue", Id, streamId, chunk, i + 1, chunks);
-    }
-  }
-
-  protected async Task ChangeMode(bool disabled)
-  {
-    await JSRuntime.InvokeVoidAsync("tinymceBlazorWrapper.updateMode", Id, disabled);
-  }
-    
-  protected override async Task OnAfterRenderAsync(bool firstRender)
-  {
-    if (firstRender)
+    [JSInvokable("GetValue")]
+    public Task<string> ReturnValue()
     {
-      blazorConf = new Dictionary<string, object>();
-      blazorConf.Add("inline", Inline);
-      string tinySrc = ScriptSrc != null ? ScriptSrc : $"https://cdn.tiny.cloud/1/{ApiKey}/tinymce/{CloudChannel}/tinymce.min.js";
-      blazorConf.Add("src", tinySrc);
-      blazorConf.Add("jsConf", JsConfSrc);
-      blazorConf.Add("modelEvents", ModelEvents);
-      Dictionary<string, object> merged = Merge(Conf, AdditionalAttributes);
-      blazorConf.Add("conf", merged);
-      if (!_setDisable && merged.ContainsKey("readonly"))
-      {
-        _disable = merged["readonly"] is bool ? (bool)merged["readonly"] : false;
-      }
-      blazorConf.Add("disabled", Disable);
-      // TBD: Load the events
-        @*foreach (KeyValuePair<string, object> kvp in AdditionalAttributes)
+        return Task.FromResult(Value);
+    }
+
+    [JSInvokable("UpdateModel")]
+    public void OnChangeContent(string streamId, int index, string val, int size)
+    {
+        PushUpdate(streamId, index, val, size, (content) =>
+        {
+            _value = content;
+            ValueChanged.InvokeAsync(content);
+        });
+    }
+
+    [JSInvokable("UpdateText")]
+    public void OnChangeText(string streamId, int index, string val, int size)
+    {
+        PushUpdate(streamId, index, val, size, (content) =>
+        {
+            _text = content;
+            TextChanged.InvokeAsync(content);
+        });
+    }
+
+    /*
+     * By default, hooked up with TinyMce's onchange event;
+     */
+
+    [JSInvokable("OnChange")]
+    public void OnChange()
+    {
+        if (!ValidateOnInput)
+        {
+            NotifyFieldChanged();
+        }
+    }
+
+    /*
+    * By default, hooked up with TinyMce's oninput event;
+    */
+
+    [JSInvokable("OnInput")]
+    public void OnInput()
+    {
+        if (ValidateOnInput)
+        {
+            NotifyFieldChanged();
+        }
+    }
+
+    private void NotifyFieldChanged()
+    {
+        if (For == null)
+        {
+            return;
+        }
+    // Notify field changed to trigger validation
+        EditContext?.NotifyFieldChanged(FieldIdentifier.Create(For));
+        UpdateClassNameAndReRender();
+    }
+
+    // prepend FieldCssClass (modified, valid invalid) to TinyMce's container element
+    private void UpdateClassNameAndReRender()
+    {
+        ClassName = GetClassName();
+        StateHasChanged();
+    }
+
+    // prepend FieldCssClass to user provided class name;
+    private string GetClassName()
+    {
+        if (For == null)
+        {
+            return string.Empty;
+        }
+        return $"{EditContext?.FieldCssClass(For)} {_userClassName}";
+    }
+
+    public void PushUpdate(string streamId, int index, string content, int size, Action<string> callback)
+    {
+        string acc = "";
+        bool remove = streamMap.TryGetValue(streamId, out acc);
+        acc = acc + content;
+        if (index == size)
+        {
+            if (remove)
+            {
+                streamMap.Remove(streamId);
+            }
+            callback(acc);
+        }
+        else
+        {
+            streamMap[streamId] = acc;
+        }
+    }
+
+    protected async Task PushValue(string nextVal)
+    {
+        int chunks = (nextVal.Length / _chunkSize) + 1;
+        string streamId = String.Format("{0:d9}", (DateTime.Now.Ticks / 10) % 1000000000);
+        for (int i = 0; i < chunks; i++)
+        {
+            string chunk = nextVal.Substring(_chunkSize * i, nextVal.Length < (_chunkSize * (i + 1)) ? (nextVal.Length - (_chunkSize * i)) : _chunkSize);
+            await JSRuntime.InvokeVoidAsync("tinymceBlazorWrapper.updateValue", Id, streamId, chunk, i + 1, chunks);
+        }
+    }
+
+    protected async Task ChangeMode(bool disabled)
+    {
+        await JSRuntime.InvokeVoidAsync("tinymceBlazorWrapper.updateMode", Id, disabled);
+    }
+
+    protected override void OnParametersSet()
+    {
+        EnsureForParamWhenUsedInEditForm();
+        ClassName = GetClassName();
+        base.OnParametersSet();
+    }
+
+    private void EnsureForParamWhenUsedInEditForm()
+    {
+        if (EditContext != null && For == null)
+        {
+            throw new Exception("Editor is used inside an EditForm but field accessor: \"For\" parameter is not specified.");
+        }
+    }
+
+    /**
+    * Store user's ClassName: used as a base when add "modified, invalid, valid" on validation    
+    */
+    public override Task SetParametersAsync(ParameterView parameters)
+    {
+        _userClassName = parameters.GetValueOrDefault<string>("ClassName") ?? "tinymce-wrapper";
+        return base.SetParametersAsync(parameters);
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            blazorConf = new Dictionary<string, object>();
+            blazorConf.Add("inline", Inline);
+            string tinySrc = ScriptSrc != null ? ScriptSrc : $"https://cdn.tiny.cloud/1/{ApiKey}/tinymce/{CloudChannel}/tinymce.min.js";
+            blazorConf.Add("src", tinySrc);
+            blazorConf.Add("jsConf", JsConfSrc);
+            blazorConf.Add("modelEvents", ModelEvents);
+            Dictionary<string, object> merged = Merge(Conf, AdditionalAttributes);
+            blazorConf.Add("conf", merged);
+            if (!_setDisable && merged.ContainsKey("readonly"))
+            {
+                _disable = merged["readonly"] is bool ? (bool)merged["readonly"] : false;
+            }
+            blazorConf.Add("disabled", Disable);
+    // TBD: Load the events
+            @*foreach (KeyValuePair<string, object> kvp in AdditionalAttributes)
       {
         System.Diagnostics.Debug.WriteLine($"Found: {kvp.Key} with type {kvp.Value.GetType().ToString()}");
       }*@
 
-      dotNetRef = DotNetObjectReference.Create(this);
-      await JSRuntime.InvokeVoidAsync("tinymceBlazorWrapper.init", Element, blazorConf, dotNetRef);
-      _initialized = true;
-    }
-
-  }
-
-  public void Dispose()
-  {
-    //IAsyncDisposable is supported from .net5
-    _ = DisposeAsync();
-  }
-
-  public async Task DisposeAsync()
-  {
-    dotNetRef?.Dispose();
-    if (_initialized) {
-      var task = JSRuntime.InvokeVoidAsync("tinymceBlazorWrapper.destroy", Element, Id);
-      try
-      {
-        await task;
-      }
-      catch
-      {
-        if ( !task.IsCanceled )
-        {
-          throw;
+            dotNetRef = DotNetObjectReference.Create(this);
+            await JSRuntime.InvokeVoidAsync("tinymceBlazorWrapper.init", Element, blazorConf, dotNetRef);
+            _initialized = true;
         }
-      }
     }
-  }
 
-  // Or new Dictionary<string, object>() { d1, d2 }
-  private static Dictionary<string, object> Merge(params Dictionary<string, object>[] dictionaries)
-  {
-    Dictionary<string, object> merged = new Dictionary<string, object>();
-    foreach (Dictionary<string, object> d in dictionaries)
+    public void Dispose()
     {
-      d.ToList().ForEach(pair => merged[pair.Key] = pair.Value);
+    //IAsyncDisposable is supported from .net5
+        _ = DisposeAsync();
     }
-    return merged;
-  }
+
+    public async Task DisposeAsync()
+    {
+        dotNetRef?.Dispose();
+        if (_initialized)
+        {
+            var task = JSRuntime.InvokeVoidAsync("tinymceBlazorWrapper.destroy", Element, Id);
+            try
+            {
+                await task;
+            }
+            catch
+            {
+                if (!task.IsCanceled)
+                {
+                    throw;
+                }
+            }
+        }
+    }
+
+    // Or new Dictionary<string, object>() { d1, d2 }
+    private static Dictionary<string, object> Merge(params Dictionary<string, object>[] dictionaries)
+    {
+        Dictionary<string, object> merged = new Dictionary<string, object>();
+        foreach (Dictionary<string, object> d in dictionaries)
+        {
+            d.ToList().ForEach(pair => merged[pair.Key] = pair.Value);
+        }
+        return merged;
+    }
+
 }
