@@ -243,10 +243,11 @@ By default the Editor trigger validation when `onchange` event fires. You can ch
     <DataAnnotationsValidator />
     <p>
         <label>Content</label>
-        <InputTinyMCEEditor.Blazor.InputTinyEditor For="() => Model.Content"
-                                                   @bind-Value="Model.Content"
-                                                   ValidationOnInput="@true"
-                                                   />
+        
+        <Editor For="() => Model.Content" 
+          @bind-Value="Model.Content" 
+          ValidationOnInput="@true"/>
+
         <ValidationMessage For="() => Model.Content" />
     </p>  
 </EditForm>
