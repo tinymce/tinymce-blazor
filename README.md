@@ -230,6 +230,39 @@ The `@bind-Value` directive can be used to create a two-way data binding.
   private string content = "<p>Hello world</p>";
 }
 ```
+
+##### Enable Form Validation
+
+When the Editor is used part of a form inside an `EditForm`, specifying `For` directive will enable form validation behaviours like Blazor's build in form components. 
+
+By default the Editor trigger validation when `onchange` event fires. You can change the trigger to `oninput` by specifying `ValidateOnInput` to `true`.
+
+
+```razor
+<EditForm EditContext="@CurrentEditContext">
+    <DataAnnotationsValidator />
+    <p>
+        <label>Content</label>
+        <InputTinyMCEEditor.Blazor.InputTinyEditor For="() => Model.Content"
+                                                   @bind-Value="Model.Content"
+                                                   ValidationOnInput="@true"
+                                                   />
+        <ValidationMessage For="() => Model.Content" />
+    </p>  
+</EditForm>
+
+@code {
+    private Model Model { get; set; } = new Model();
+    private EditContext? CurrentEditContext;
+
+    protected override void OnInitialized()
+    {
+        CurrentEditContext = new(Model);
+        base.OnInitialized();
+    }
+}
+```
+
 #### Binding Text output
 
 Starting from v0.0.4 you can use the `@bind-Text` property to hook the text output of the editor into a variable
