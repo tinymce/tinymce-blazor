@@ -233,7 +233,7 @@ The `@bind-Value` directive can be used to create a two-way data binding.
 
 ##### Enable Form Validation
 
-When the Editor is used part of a form inside an `EditForm`, specifying `For` directive will enable form validation behaviours like Blazor's build in form components. 
+When the Editor is used part of a form inside an `EditForm`, specifying `Field` directive will enable form validation behaviours like Blazor's build in form components. 
 
 By default the Editor trigger validation when `onchange` event fires. You can change the trigger to `oninput` by specifying `ValidateOnInput` to `true`.
 
@@ -244,7 +244,7 @@ By default the Editor trigger validation when `onchange` event fires. You can ch
     <p>
         <label>Content</label>
         
-        <Editor For="() => Model.Content" 
+        <Editor Field="() => Model.Content" 
           @bind-Value="Model.Content" 
           ValidationOnInput="@true"/>
 

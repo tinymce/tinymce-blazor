@@ -121,7 +121,7 @@ window.tinymceBlazorWrapper = {
         });
       });
       editor.on('change', (e) => {
-        dotNetRef.invokeMethodAsync('OnChange');
+        dotNetRef.invokeMethodAsync('OnChangeContent');
       })
       editor.on('input', (e) => {
         dotNetRef.invokeMethodAsync('OnInput');
