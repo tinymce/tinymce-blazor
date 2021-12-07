@@ -31,6 +31,8 @@
   private Dictionary<string, object> blazorConf;
   private DotNetObjectReference<Editor> dotNetRef;
   private string _userClassName = "tinymce-wrapper";
+  private bool _changeEventTriggered = false;
+  private bool _inputEventTriggered = false;
   
   [CascadingParameter] public EditContext EditContext { get; set; }
   [Parameter] public Expression<Func<string>>? Field { get; set; }
@@ -101,6 +103,7 @@
       _value = content;
       ValueChanged.InvokeAsync(content);
     });
+    TriggerValidation();
   }
 
   [JSInvokable("UpdateText")]
@@ -110,19 +113,30 @@
       _text = content;
       TextChanged.InvokeAsync(content);
     });
+    TriggerValidation();
+  }
+
+  private void TriggerValidation()
+  {
+    if (_changeEventTriggered || _inputEventTriggered)
+    {
+      NotifyFieldChanged();
+      _changeEventTriggered = false;
+      _inputEventTriggered = false;
+    }
   }
     
   /*
    * By default, hooked up with TinyMce's onchange event;
    */
-
+  
   [JSInvokable("OnChange")]
   public void OnChange()
   {
-      if (!ValidateOnInput)
-      {
-          NotifyFieldChanged();
-      }
+    if (!ValidateOnInput)
+    {
+      _changeEventTriggered = true;
+    }
   }
 
  /*
@@ -132,10 +146,10 @@
  [JSInvokable("OnInput")]
  public void OnInput()
  {
-     if (ValidateOnInput)
-     {
-         NotifyFieldChanged();
-     }
+   if (ValidateOnInput)
+   {
+     _inputEventTriggered = true;
+   }
  }
 
  private void NotifyFieldChanged()
