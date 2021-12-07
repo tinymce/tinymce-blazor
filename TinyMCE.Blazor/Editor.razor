@@ -104,7 +104,6 @@
       ValueChanged.InvokeAsync(content);
       TriggerValidation();
     });
-    TriggerValidation();
   }
 
   [JSInvokable("UpdateText")]
@@ -112,9 +111,9 @@
   {
     PushUpdate(streamId, index, val, size, (content) => {
       _text = content;
-      TextChanged.InvokeAsync(content);
+      TextChanged.InvokeAsync(content); 
+      TriggerValidation();
     });
-    TriggerValidation();
   }
 
   private void TriggerValidation()
