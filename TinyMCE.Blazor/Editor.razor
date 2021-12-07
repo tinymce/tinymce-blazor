@@ -102,6 +102,7 @@
     PushUpdate(streamId, index, val, size, (content) => {
       _value = content;
       ValueChanged.InvokeAsync(content);
+      TriggerValidation();
     });
     TriggerValidation();
   }
