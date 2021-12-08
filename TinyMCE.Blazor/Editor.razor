@@ -1,5 +1,7 @@
 ﻿@using System;
+@using System.Linq.Expressions
 @using Microsoft.AspNetCore.Components;
+@using Microsoft.AspNetCore.Components.Forms
 @using Microsoft.JSInterop;
 
 @implements IDisposable
@@ -28,7 +30,13 @@
   private ElementReference Element;
   private Dictionary<string, object> blazorConf;
   private DotNetObjectReference<Editor> dotNetRef;
-
+  private string _userClassName = "tinymce-wrapper";
+  private bool _changeEventTriggered = false;
+  private bool _inputEventTriggered = false;
+  
+  [CascadingParameter] public EditContext EditContext { get; set; }
+  [Parameter] public Expression<Func<string>>? Field { get; set; }
+  [Parameter] public bool ValidateOnInput { get; set; } = false;
   [Parameter] public string ClassName { get; set; } = "tinymce-wrapper";
   [Parameter] public string Id { get; set; } = System.Guid.NewGuid().ToString();
   [Parameter] public bool Inline { get; set; } = false;
@@ -94,6 +102,7 @@
     PushUpdate(streamId, index, val, size, (content) => {
       _value = content;
       ValueChanged.InvokeAsync(content);
+      TriggerValidation();
     });
   }
 
@@ -102,9 +111,99 @@
   {
     PushUpdate(streamId, index, val, size, (content) => {
       _text = content;
-      TextChanged.InvokeAsync(content);
+      TextChanged.InvokeAsync(content); 
+      TriggerValidation();
     });
   }
+
+  private void TriggerValidation()
+  {
+    if (_changeEventTriggered || _inputEventTriggered)
+    {
+      NotifyFieldChanged();
+      _changeEventTriggered = false;
+      _inputEventTriggered = false;
+    }
+  }
+    
+  /*
+   * By default, hooked up with TinyMce's onchange event;
+   */
+  
+  [JSInvokable("OnChange")]
+  public void OnChange()
+  {
+    if (!ValidateOnInput)
+    {
+      _changeEventTriggered = true;
+    }
+  }
+
+ /*
+ * By default, hooked up with TinyMce's oninput event;
+ */
+
+ [JSInvokable("OnInput")]
+ public void OnInput()
+ {
+   if (ValidateOnInput)
+   {
+     _inputEventTriggered = true;
+   }
+ }
+
+ private void NotifyFieldChanged()
+ {
+     if (Field == null)
+     {
+         return;
+     }
+ // Notify field changed to trigger validation
+     EditContext?.NotifyFieldChanged(FieldIdentifier.Create(Field));
+     UpdateClassNameAndReRender();
+ }
+
+ // prepend FieldCssClass (modified, valid invalid) to TinyMce's container element
+ private void UpdateClassNameAndReRender()
+ {
+     ClassName = GetClassName();
+     StateHasChanged();
+ }
+
+ // prepend FieldCssClass to user provided class name;
+ private string GetClassName()
+ {
+     if (Field == null)
+     {
+         return string.Empty;
+     }
+     return $"{EditContext?.FieldCssClass(Field)} {_userClassName}";
+ }
+  
+  protected override void OnParametersSet()
+  {
+    EnsureForParamWhenUsedInEditForm();
+    ClassName = GetClassName();
+    base.OnParametersSet();
+  }
+
+  private void EnsureForParamWhenUsedInEditForm()
+  {
+    if (EditContext != null && Field == null)
+    {
+      throw new Exception("Editor is used inside an EditForm but field accessor: \"Field\" parameter is not specified.");
+    }
+  }
+
+  /**
+    * Store user's ClassName: used as a base when add "modified, invalid, valid" on validation    
+    */
+  public override Task SetParametersAsync(ParameterView parameters)
+  {
+    _userClassName = parameters.GetValueOrDefault<string>("ClassName") ?? "tinymce-wrapper";
+    return base.SetParametersAsync(parameters);
+  }
+
 
   public void PushUpdate(string streamId, int index, string content, int size, Action<string> callback) {
     string acc = "";
