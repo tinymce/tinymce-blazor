@@ -86,7 +86,12 @@ const chunkMap = (() => {
 
 window.tinymceBlazorWrapper = {
   updateMode: (id, disable) => {
-    getTiny().get(id).setMode(disable ? 'readonly' : 'design');
+    const tiny = getTiny().get(id);
+    if (tiny.mode && typeof tiny.mode.set === 'function') {
+      tiny.mode.set(disable ? 'readonly' : 'design');
+    } else {
+      tiny.setMode(disable ? 'readonly' : 'design');
+    }
   },
   updateValue: (id, streamId, value, index, chunks) => {
     chunkMap.push(streamId, id, value, index, chunks);
