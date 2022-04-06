@@ -33,7 +33,17 @@
   private string _userClassName = "tinymce-wrapper";
   private bool _changeEventTriggered = false;
   private bool _inputEventTriggered = false;
-  
+
+  public void insertContent(string content)
+  {
+    JSRuntime.InvokeVoidAsync("tinymceBlazorWrapper.insertContent", Id, content);
+  }
+
+  public void insertContent(string content, Object args)
+  {
+    JSRuntime.InvokeVoidAsync("tinymceBlazorWrapper.insertContent", Id, content, args);
+  }
+
   [CascadingParameter] public EditContext EditContext { get; set; }
   [Parameter] public Expression<Func<string>>? Field { get; set; }
   [Parameter] public bool ValidateOnInput { get; set; } = false;
@@ -111,7 +121,7 @@
   {
     PushUpdate(streamId, index, val, size, (content) => {
       _text = content;
-      TextChanged.InvokeAsync(content); 
+      TextChanged.InvokeAsync(content);
       TriggerValidation();
     });
   }
@@ -125,11 +135,11 @@
       _inputEventTriggered = false;
     }
   }
-    
+
   /*
    * By default, hooked up with TinyMce's onchange event;
    */
-  
+
   [JSInvokable("OnChange")]
   public void OnChange()
   {
@@ -139,47 +149,47 @@
     }
   }
 
- /*
- * By default, hooked up with TinyMce's oninput event;
- */
+  /*
+  * By default, hooked up with TinyMce's oninput event;
+  */
 
- [JSInvokable("OnInput")]
- public void OnInput()
- {
-   if (ValidateOnInput)
-   {
-     _inputEventTriggered = true;
-   }
- }
+  [JSInvokable("OnInput")]
+  public void OnInput()
+  {
+    if (ValidateOnInput)
+    {
+      _inputEventTriggered = true;
+    }
+  }
 
- private void NotifyFieldChanged()
- {
-     if (Field == null)
-     {
-         return;
-     }
- // Notify field changed to trigger validation
-     EditContext?.NotifyFieldChanged(FieldIdentifier.Create(Field));
-     UpdateClassNameAndReRender();
- }
+  private void NotifyFieldChanged()
+  {
+    if (Field == null)
+    {
+      return;
+    }
+    // Notify field changed to trigger validation
+    EditContext?.NotifyFieldChanged(FieldIdentifier.Create(Field));
+    UpdateClassNameAndReRender();
+  }
 
- // prepend FieldCssClass (modified, valid invalid) to TinyMce's container element
- private void UpdateClassNameAndReRender()
- {
-     ClassName = GetClassName();
-     StateHasChanged();
- }
+  // prepend FieldCssClass (modified, valid invalid) to TinyMce's container element
+  private void UpdateClassNameAndReRender()
+  {
+    ClassName = GetClassName();
+    StateHasChanged();
+  }
 
- // prepend FieldCssClass to user provided class name;
- private string GetClassName()
- {
-     if (Field == null)
-     {
-         return string.Empty;
-     }
-     return $"{EditContext?.FieldCssClass(Field)} {_userClassName}";
- }
-  
+  // prepend FieldCssClass to user provided class name;
+  private string GetClassName()
+  {
+    if (Field == null)
+    {
+      return string.Empty;
+    }
+    return $"{EditContext?.FieldCssClass(Field)} {_userClassName}";
+  }
+
   protected override void OnParametersSet()
   {
     EnsureForParamWhenUsedInEditForm();
@@ -233,7 +243,7 @@
   {
     await JSRuntime.InvokeVoidAsync("tinymceBlazorWrapper.updateMode", Id, disabled);
   }
-    
+
   protected override async Task OnAfterRenderAsync(bool firstRender)
   {
     if (firstRender)
