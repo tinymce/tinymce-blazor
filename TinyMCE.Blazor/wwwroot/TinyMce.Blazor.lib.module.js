@@ -85,6 +85,11 @@ const chunkMap = (() => {
 })();
 
 window.tinymceBlazorWrapper = {
+  insertContent: (id, content, args) => {
+    console.log('insetting content', content, args);
+    const tiny = getTiny().get(id);
+    tiny?.insertContent(content, args);
+  },
   updateMode: (id, disable) => {
     const tiny = getTiny().get(id);
     if (tiny.mode && typeof tiny.mode.set === 'function') {
