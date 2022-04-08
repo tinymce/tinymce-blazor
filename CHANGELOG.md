@@ -8,6 +8,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - `InsertContent` API to insert content at caret position
 
+### Fixed
+- Default cloud channel back to '6'
+- Editor not cleaning up pop-up after disposing
+
 ## 1.0.1
 ### Fixed
 - Default cloud channel reverted to '5' until the release of '6'
