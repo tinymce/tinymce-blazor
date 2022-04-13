@@ -192,7 +192,7 @@ Type: Dictionary<string, object>
 />
 
 @code {
-  private Dictionary<string. object> editorConf = new Dictionary<string, object>{
+  private Dictionary<string, object> editorConf = new Dictionary<string, object>{
     {"toolbar", "undo redo | bold italic"},
     {"width", 400}
   };
