@@ -25,7 +25,7 @@
   private bool _setDisable = false;
   private bool _disable = false;
   private Dictionary<string, string> streamMap = new Dictionary<string, string>();
-  private int _chunkSize = 30000;
+  private int _chunkSize = 16 * 1024;
   private bool _initialized = false;
   private ElementReference Element;
   private Dictionary<string, object> blazorConf;

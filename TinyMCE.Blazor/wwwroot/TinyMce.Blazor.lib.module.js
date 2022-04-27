@@ -102,7 +102,7 @@ window.tinymceBlazorWrapper = {
     chunkMap.push(streamId, id, value, index, chunks);
   },
   init: (el, blazorConf, dotNetRef) => {
-    const chunkSize = 30000;
+    const chunkSize = 16 * 1024;
     const update = (format, content) => {
       const updateFn = format === 'text' ? 'UpdateText' : 'UpdateModel';
       const chunks = Math.floor(content.length / chunkSize) + 1;
