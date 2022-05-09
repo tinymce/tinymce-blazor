@@ -1,4 +1,4 @@
-console.log('loading js tinymce-blazor');
+﻿console.log('loading js tinymce-blazor');
 
 const CreateScriptLoader = () => {
   let unique = 0;
@@ -68,6 +68,26 @@ const updateTinyVal = (id, val) => {
   }
 };
 
+const tinyEventHandler = (() => {
+  const eventCache = {};
+  const bindEvent = (editor, event, fn) => {
+    if (!eventCache[editor.id]) eventCache[editor.id] = [];
+    eventCache[editor.id].push({ name: event, fn });
+    editor.on(event, fn);
+  };
+  const unbindEditor = (editorId) => {
+    const editor = getTiny().get(editorId);
+    eventCache[editorId].forEach((event, i) => {
+      editor.off(event.name, event.fn);
+    });
+    delete eventCache.editorId;
+  };
+  return {
+    bindEvent,
+    unbindEditor
+  }
+})();
+
 const chunkMap = (() => {
   const map = new Map();
   const next = (streamId, editorId, val, index, size) => {
@@ -86,7 +106,6 @@ const chunkMap = (() => {
 
 window.tinymceBlazorWrapper = {
   insertContent: (id, content, args) => {
-    console.log('insetting content', content, args);
     const tiny = getTiny().get(id);
     tiny?.insertContent(content, args);
   },
@@ -124,25 +143,16 @@ window.tinymceBlazorWrapper = {
     tinyConf.target = el;
     tinyConf._setup = tinyConf.setup;
     tinyConf.setup = (editor) => {
-      editor.on('init', (e) => {
-        // set the initial value on init
-        dotNetRef.invokeMethodAsync('GetValue').then(value => {
-          editor.setContent(value);
-        });
-      });
-      editor.on('change', (e) => {
-        dotNetRef.invokeMethodAsync('OnChange');
-      })
-      editor.on('input', (e) => {
-        dotNetRef.invokeMethodAsync('OnInput');
-      })
-      editor.on('setcontent', (e) => update('text', editor.getContent({ format: 'text' })));
-      editor.on(blazorConf.modelEvents, (e) => {
+      tinyEventHandler.bindEvent(editor, 'init', (e) => dotNetRef.invokeMethodAsync('GetValue').then(value => { editor.setContent(value); }));
+      tinyEventHandler.bindEvent(editor, 'change', (e) => { dotNetRef.invokeMethodAsync('OnChange'); });
+      tinyEventHandler.bindEvent(editor, 'input', (e) => { dotNetRef.invokeMethodAsync('OnInput'); });
+      tinyEventHandler.bindEvent(editor, 'setcontent', (e) => update('text', editor.getContent({ format: 'text' })));
+      tinyEventHandler.bindEvent(editor, blazorConf.modelEvents, (e) => {
         update('html', editor.getContent());
         update('text', editor.getContent({ format: 'text' }));
       });
       if (tinyConf._setup && typeof tinyConf._setup === 'function') {
-        tinyConf._setup(editor);
+        tinyConf._setup(editor, tinyEventHandler);
       }
     }
 
@@ -159,6 +169,7 @@ window.tinymceBlazorWrapper = {
   },
   destroy: (el, id) => {
     if (getTiny() && getTiny().get(id)) {
+      tinyEventHandler.unbindEditor(id);
       getTiny().get(id).remove();
     }
   }

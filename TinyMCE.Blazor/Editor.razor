@@ -34,12 +34,12 @@
   private bool _changeEventTriggered = false;
   private bool _inputEventTriggered = false;
 
-  public void insertContent(string content)
+  public void InsertContent(string content)
   {
     JSRuntime.InvokeVoidAsync("tinymceBlazorWrapper.insertContent", Id, content);
   }
 
-  public void insertContent(string content, Object args)
+  public void InsertContent(string content, Object args)
   {
     JSRuntime.InvokeVoidAsync("tinymceBlazorWrapper.insertContent", Id, content, args);
   }
