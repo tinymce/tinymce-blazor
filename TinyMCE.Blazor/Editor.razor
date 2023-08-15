@@ -183,7 +183,7 @@
   // prepend FieldCssClass to user provided class name;
   private string GetClassName()
   {
-    if (Field == null)
+    if (EditContext != null && Field == null)
     {
       return string.Empty;
     }
