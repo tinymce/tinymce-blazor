@@ -13,3 +13,12 @@ Unfortunately, the release and publish process needs a few manual steps: updatin
 3. Click  on `Manage package`
 4. Open up the `Documentation` section
 5. You can use the link to the github repo `README.md` at https://raw.githubusercontent.com/tinymce/tinymce-blazor/master/README.md
+
+### Starting the TinyMCE.BlazorDemoApp
+
+This demo will re-compile the blazor editor component and has various demos for different use cases.
+
+```
+$ dotnet watch --project TinyMCE.BlazorDemoApp
+```
+
