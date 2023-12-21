@@ -8,7 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - Updated CI library to latest
-- Custom ClassName would not be used if the component was not rendered inside a EditForm.
+- Custom ClassName would not be used if the component was not rendered inside a EditForm patch contributed by Kamil Kuklinski.
 
 ## 1.0.4 - 2022-05-20
 
