@@ -1,0 +1,40 @@
+@page "/editor-api"
+@rendermode InteractiveServer
+@inject IConfiguration Configuration
+
+<PageTitle>EditorApi</PageTitle>
+
+<h1>Editor component</h1>
+
+<p>Shows various API interations with the tinymce editor instance.</p>
+
+<Editor
+  @ref="editor"
+  Inline=false
+  CloudChannel="6"
+  Value="@content"
+  JsConfSrc="MyCustomNamespace.config"
+  Disable=false
+  ApiKey="@Configuration["BlazorDemoApp:ApiKey"]"
+  ClassName="tinymce-wrapper"
+/>
+
+<button class="btn btn-primary" @onclick="ChangeContent">ChangeContent</button>
+<button class="btn btn-primary" @onclick="InsertContent">InsertContent</button>
+
+@code {
+    private string content = "inital content";
+    private TinyMCE.Blazor.Editor? editor;
+
+    private void ChangeContent()
+    {
+        // Console.WriteLine("ChangeContent");
+        content = "new content: " + DateTime.Now.Ticks;
+    }
+    private void InsertContent()
+    {
+        // Console.WriteLine("InsertContent");
+        editor?.InsertContent("<b>Hello</b>");
+    }
+}
+

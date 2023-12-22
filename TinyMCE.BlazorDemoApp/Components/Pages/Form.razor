@@ -1,0 +1,38 @@
+@page "/form"
+@rendermode InteractiveServer
+@using System.ComponentModel.DataAnnotations
+@inject IConfiguration Configuration
+
+<PageTitle>Form</PageTitle>
+
+<h1>Editor EditForm</h1>
+
+<p>Using TinyMCE in a EditForm.</p>
+
+<EditForm Model="@myModel" OnValidSubmit="@HandleValidSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <Editor 
+      ApiKey="@Configuration["BlazorDemoApp:ApiKey"]"
+      Field="@(() => myModel.Content)"
+      @bind-Value="@myModel.Content"
+    />
+
+    <button class="btn btn-primary" type="submit">Submit</button>
+</EditForm>
+
+@code {
+    private MyModel myModel = new MyModel();
+
+    private void HandleValidSubmit() {
+      Console.WriteLine("Model Content: " + myModel.Content);
+    }
+
+    private class MyModel {
+    [Required(ErrorMessage = "Content is required.")]
+    [MinLength(20, ErrorMessage = "Content must be at least 20 characters.")]
+      public string Content { get; set; } = "";
+    }
+}
+
