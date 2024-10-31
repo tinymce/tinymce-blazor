@@ -4,9 +4,9 @@
 
 This package is a wrapper around [TinyMCE](https://github.com/tinymce/tinymce) to facilitate its use in Blazor applications.
 
-* If you need detailed documentation on TinyMCE, see: [TinyMCE Documentation](https://www.tiny.cloud/docs/tinymce/6/).
-* For the TinyMCE Blazor Quick Start, see: [TinyMCE Documentation - Blazor Integration](https://www.tiny.cloud/docs/tinymce/6/blazor-cloud/).
-* For the TinyMCE Blazor Technical Reference, see: [TinyMCE Documentation - TinyMCE Blazor Technical Reference](https://www.tiny.cloud/docs/tinymce/6/blazor-ref/).
+* If you need detailed documentation on TinyMCE, see: [TinyMCE Documentation](https://www.tiny.cloud/docs/tinymce/7/).
+* For the TinyMCE Blazor Quick Start, see: [TinyMCE Documentation - Blazor Integration](https://www.tiny.cloud/docs/tinymce/7/blazor-cloud/).
+* For the TinyMCE Blazor Technical Reference, see: [TinyMCE Documentation - TinyMCE Blazor Technical Reference](https://www.tiny.cloud/docs/tinymce/7/blazor-ref/).
 
 ### Issues
 
@@ -31,8 +31,6 @@ Install the TinyMCE Blazor integration
 `dotnet add package TinyMCE.Blazor`
 
 Verify by checking the `ItemGroup` references in `BlazorApp.csproj`
-
-For dotnet 5 projects, add the `tinymce-blazor.js` script to your `Pages/_Host.cshtml` scripts. This step can be skipped for dotnet 6 projects.
 
 ```
   <script src="_framework/blazor.server.js"></script>
@@ -76,12 +74,13 @@ The editor component accepts the following properties:
 <Editor
   Id="uuid"
   Inline=false
-  CloudChannel="5"
+  CloudChannel="7"
   Value=""
   Disable=false
   JsConfSrc="<path_to_jsObj>"
   Conf="@yourConf"
   ApiKey="your-api-key"
+  LicenseKey="your-license-key"
   ClassName="tinymce-wrapper"
 />
 ```
@@ -113,6 +112,17 @@ Type: string
 ```
 <Editor
   CloudChannel="5-dev"
+/>
+```
+
+#### LicenseKey
+
+Specifies the [license key](https://www.tiny.cloud/docs/tinymce/7/license-key/) to be used with TinyMCE. This option does not need to be specified if you are using TinyMCE cloud.
+
+##### Example using LicenseKey
+```
+<Editor
+  LicenseKey="your-license-key"
 />
 ```
 
@@ -237,7 +247,7 @@ The `@bind-Value` directive can be used to create a two-way data binding.
 
 ##### Enable Form Validation
 
-When the Editor is used part of a form inside an `EditForm`, specifying `Field` directive will enable form validation behaviours like Blazor's build in form components. 
+When the Editor is used part of a form inside an `EditForm`, specifying `Field` directive will enable form validation behaviours like Blazor's build in form components.
 
 By default the Editor trigger validation when `onchange` event fires. You can change the trigger to `oninput` by specifying `ValidateOnInput` to `true`.
 
@@ -247,13 +257,13 @@ By default the Editor trigger validation when `onchange` event fires. You can ch
     <DataAnnotationsValidator />
     <p>
         <label>Content</label>
-        
-        <Editor Field="() => Model.Content" 
-          @bind-Value="Model.Content" 
+
+        <Editor Field="() => Model.Content"
+          @bind-Value="Model.Content"
           ValidationOnInput="@true"/>
 
         <ValidationMessage For="() => Model.Content" />
-    </p>  
+    </p>
 </EditForm>
 
 @code {

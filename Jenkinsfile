@@ -4,12 +4,12 @@
 standardProperties()
 
 tinyPods.custom([
-  [ name: 'dotnet', image: 'mcr.microsoft.com/dotnet/sdk:6.0' ]
+  [ name: 'dotnet', image: 'mcr.microsoft.com/dotnet/sdk:8.0' ]
 ]) {
   container('dotnet') {
     stage("build") {
-      echo "Building Blazor component"
-      exec('dotnet build TinyMCE.Blazor')
+      echo "Building Blazor component and demo app"
+      exec('dotnet build')
     }
 
     stage("test") {

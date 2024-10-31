@@ -138,6 +138,9 @@ window.tinymceBlazorWrapper = {
       return (jsConf !== undefined && typeof jsConf === 'object') ? jsConf : {};
     };
     const tinyConf = { ...getJsObj(blazorConf.jsConf), ...blazorConf.conf };
+    if (blazorConf.licenseKey) {
+      tinyConf.license_key = blazorConf.licenseKey;
+    }
     tinyConf.inline = blazorConf.inline;
     tinyConf.readonly = blazorConf.disabled;
     tinyConf.target = el;

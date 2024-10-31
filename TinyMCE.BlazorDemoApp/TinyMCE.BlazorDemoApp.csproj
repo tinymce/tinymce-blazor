@@ -7,10 +7,16 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <!-- <PackageReference Include="TinyMCE.Blazor" Version="1.0.4" /> -->
     <ProjectReference Include="..\TinyMCE.Blazor\TinyMCE.Blazor.csproj">
       <Name>TinyMCE.Blazor</Name>
     </ProjectReference>
-  </ItemGroup>
+  </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="TinyMCE" Version="7.4.1" />
+  </ItemGroup>
+
+  <Target Name="RemoveLibDirectory" AfterTargets="Clean">
+    <RemoveDir Directories="$(ProjectDir)/wwwroot/lib" />
+  </Target>
 </Project>

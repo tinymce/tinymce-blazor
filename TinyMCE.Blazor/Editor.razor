@@ -44,21 +44,26 @@
     JSRuntime.InvokeVoidAsync("tinymceBlazorWrapper.insertContent", Id, content, args);
   }
 
-  [CascadingParameter] public EditContext EditContext { get; set; }
+  #nullable enable
+  [CascadingParameter] public EditContext? EditContext { get; set; }
   [Parameter] public Expression<Func<string>>? Field { get; set; }
   [Parameter] public bool ValidateOnInput { get; set; } = false;
   [Parameter] public string ClassName { get; set; } = "tinymce-wrapper";
   [Parameter] public string Id { get; set; } = System.Guid.NewGuid().ToString();
   [Parameter] public bool Inline { get; set; } = false;
   [Parameter] public string ApiKey { get; set; } = "no-api-key";
-  [Parameter] public string CloudChannel { get; set; } = "6";
-  [Parameter] public string ScriptSrc { get; set; }
-  [Parameter] public string InitialValue { get; set; }
-  [Parameter] public string JsConfSrc { get; set; }
+  [Parameter] public string? LicenseKey { get; set; }
+  [Parameter] public string CloudChannel { get; set; } = "7";
+  [Parameter] public string? ScriptSrc { get; set; }
+  [Parameter] public string? InitialValue { get; set; }
+  [Parameter] public string? JsConfSrc { get; set; }
   [Parameter] public string ModelEvents { get; set; } = "change input undo redo";
   [Parameter] public Dictionary<string, object> Conf { get; set; } = new Dictionary<string, object>();
   [Parameter(CaptureUnmatchedValues = true)] public Dictionary<string, object> AdditionalAttributes { get; set; } = new Dictionary<string, object>();
+  [Parameter] public EventCallback<string> ValueChanged { get; set; }
+  #nullable restore
 
+  #pragma warning disable BL0007
   [Parameter]
   public string Value
   {
@@ -74,8 +79,6 @@
     }
   }
 
-  [Parameter] public EventCallback<string> ValueChanged { get; set; }
-
   [Parameter]
   public string Text
   {
@@ -83,7 +86,6 @@
     set {}
   }
 
-  [Parameter] public EventCallback<string> TextChanged { get; set; }
 
   [Parameter]
   public bool Disable
@@ -99,6 +101,9 @@
       }
     }
   }
+  #pragma warning restore BL0007
+
+  [Parameter] public EventCallback<string> TextChanged { get; set; }
 
   [JSInvokable("GetValue")]
   public Task<string> ReturnValue()
@@ -249,6 +254,9 @@
     if (firstRender)
     {
       blazorConf = new Dictionary<string, object>();
+      if (this.LicenseKey != null) {
+        blazorConf.Add("licenseKey", this.LicenseKey);
+      }
       blazorConf.Add("inline", Inline);
       string tinySrc = ScriptSrc != null ? ScriptSrc : $"https://cdn.tiny.cloud/1/{ApiKey}/tinymce/{CloudChannel}/tinymce.min.js";
       blazorConf.Add("src", tinySrc);

@@ -22,3 +22,17 @@ This demo will re-compile the blazor editor component and has various demos for 
 $ dotnet watch --project TinyMCE.BlazorDemoApp
 ```
 
+### Msbuild actions
+
+#### Cleans all build artifacts on all projects
+
+```
+$ dotnet clean
+```
+
+#### Builds all projects
+
+```
+$ dotnet build
+```
+
