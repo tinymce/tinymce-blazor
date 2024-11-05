@@ -6,6 +6,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+## 2.0.0 - 2024-10-31
+
+### Added
+- New `LicenseKey` property to be used with self hosted TinyMCE.
+
+### Changed
+- Default cloud channel to '7'.
+- Dropped support for .NET 5 and 6 in favor of 8 since they are out of service more details can be found at https://dotnet.microsoft.com/en-us/platform/support/policy/dotnet-core
+
 ### Fixed
 - Custom ClassName would not be used if the component was not rendered inside an EditForm. Patch contributed by Kamil Kuklinski.
 
