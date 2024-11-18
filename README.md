@@ -105,13 +105,13 @@ Type: string
 
 Specifies the Tiny Cloud channel to use. For more information on TinyMCE development channels, see: [Specifying the TinyMCE editor version deployed from Cloud - dev, testing, and stable releases](https://www.tiny.cloud/docs/cloud-deployment-guide/editor-plugin-version/#devtestingandstablereleases)
 
-Default value: '5'
+Default value: '7'
 Type: string
 
 ##### Example using CloudChannel
 ```
 <Editor
-  CloudChannel="5-dev"
+  CloudChannel="7-dev"
 />
 ```
 
