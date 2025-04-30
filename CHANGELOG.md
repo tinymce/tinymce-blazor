@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
-## 2.1.0 - 2024-04-30
+## 2.1.0 - 2025-04-30
 
 ### Added
 - New `Readonly` property that can be used to toggle the `readonly` mode.
