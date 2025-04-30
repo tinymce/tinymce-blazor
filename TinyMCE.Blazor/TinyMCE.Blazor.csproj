@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk.Razor">
   <PropertyGroup>
     <PackageId>TinyMCE.Blazor</PackageId>
-    <Version>2.0.0</Version>
+    <Version>2.1.0</Version>
     <Authors>Tiny</Authors>
     <Company>Tiny</Company>
     <PackageTags>TinyMCE;RTE;Blazor;Component;Rich;Text;Editor;rich-text-editor</PackageTags>
