@@ -121,6 +121,8 @@ window.tinymceBlazorWrapper = {
     const tiny = getTiny().get(id);
     if (tiny.options && typeof tiny.options.set === 'function') {
       tiny.options.set('disabled', disable);
+    } else {
+      tiny.mode.set(disable ? 'disabled' : 'design');
     }
   },
   updateValue: (id, streamId, value, index, chunks) => {
