@@ -6,6 +6,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+## 2.1.0 - 2024-04-30
+
+### Added
+- New `Readonly` property that can be used to toggle the `readonly` mode.
+
+### Changed
+- The `Disabled` property now toggles the `disabled` option state instead of toggling the `readonly` mode.
+
 ## 2.0.0 - 2024-10-31
 
 ### Added
