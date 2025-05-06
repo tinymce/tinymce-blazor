@@ -1,4 +1,4 @@
-﻿console.log('loading js tinymce-blazor');
+console.log('loading js tinymce-blazor');
 
 const CreateScriptLoader = () => {
   let unique = 0;
@@ -109,12 +109,20 @@ window.tinymceBlazorWrapper = {
     const tiny = getTiny().get(id);
     tiny?.insertContent(content, args);
   },
-  updateMode: (id, disable) => {
+  updateMode: (id, mode) => {
     const tiny = getTiny().get(id);
     if (tiny.mode && typeof tiny.mode.set === 'function') {
-      tiny.mode.set(disable ? 'readonly' : 'design');
+      tiny.mode.set(mode);
     } else {
-      tiny.setMode(disable ? 'readonly' : 'design');
+      tiny.setMode(mode);
+    }
+  },
+  updateDisabled: (id, disable) => {
+    const tiny = getTiny().get(id);
+    if (tiny.options && typeof tiny.options.set === 'function') {
+      tiny.options.set('disabled', disable);
+    } else {
+      tiny.mode.set(disable ? 'disabled' : 'design');
     }
   },
   updateValue: (id, streamId, value, index, chunks) => {
@@ -142,7 +150,8 @@ window.tinymceBlazorWrapper = {
       tinyConf.license_key = blazorConf.licenseKey;
     }
     tinyConf.inline = blazorConf.inline;
-    tinyConf.readonly = blazorConf.disabled;
+    tinyConf.readonly = blazorConf.readonly;
+    tinyConf.disabled = blazorConf.disabled;
     tinyConf.target = el;
     tinyConf._setup = tinyConf.setup;
     tinyConf.setup = (editor) => {
