@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+## 2.1.1 - 2025-05-26
+
+### Fixed
+- The `Disable` and `Readonly` properties was not compatible with TinyMCE versions prior to 7.6.0.
+
 ## 2.1.0 - 2025-05-06
 
 ### Added
