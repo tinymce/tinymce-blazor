@@ -1,5 +1,24 @@
 console.log('loading js tinymce-blazor');
 
+const isTinyMceVersionLessThan = (major, minor) =>
+  (typeof tinymce !== 'undefined' && (Number(tinymce.majorVersion) < major || Number(tinymce.minorVersion.split('.')[0]) < minor));
+
+const hasDisabledSupport = () => !isTinyMceVersionLessThan(7, 6);
+
+const setEditorMode = (editor, mode) => {
+  if (editor.mode && typeof editor.mode.set === 'function') {
+    editor.mode.set(mode);
+  } else {
+    editor.setMode(mode);
+  }
+};
+
+const setLegacyDisabledOption = (tinyConf) => {
+  if (!hasDisabledSupport()) {
+    tinyConf.readonly = tinyConf.disabled || tinyConf.readonly;
+  }
+};
+
 const CreateScriptLoader = () => {
   let unique = 0;
 
@@ -110,19 +129,18 @@ window.tinymceBlazorWrapper = {
     tiny?.insertContent(content, args);
   },
   updateMode: (id, mode) => {
-    const tiny = getTiny().get(id);
-    if (tiny.mode && typeof tiny.mode.set === 'function') {
-      tiny.mode.set(mode);
-    } else {
-      tiny.setMode(mode);
-    }
+    setEditorMode(getTiny().get(id), mode);
   },
   updateDisabled: (id, disable) => {
     const tiny = getTiny().get(id);
-    if (tiny.options && typeof tiny.options.set === 'function') {
-      tiny.options.set('disabled', disable);
+    if (hasDisabledSupport()) {
+      if (tiny.options && typeof tiny.options.set === 'function') {
+        tiny.options.set('disabled', disable);
+      } else {
+        setEditorMode(tiny, disable ? 'disabled' : 'design');
+      }
     } else {
-      tiny.mode.set(disable ? 'disabled' : 'design');
+      setEditorMode(tiny, disable ? 'readonly' : 'design');
     }
   },
   updateValue: (id, streamId, value, index, chunks) => {
@@ -169,11 +187,13 @@ window.tinymceBlazorWrapper = {
     }
 
     if (getTiny()) {
+      setLegacyDisabledOption(tinyConf);
       getTiny().init(tinyConf);
     } else {
       if (el && el.ownerDocument) {
         // inject tiny here
         window.tinymceBlazorLoader.load(el.ownerDocument, blazorConf.src, () => {
+          setLegacyDisabledOption(tinyConf);
           getTiny().init(tinyConf);
         });
       }

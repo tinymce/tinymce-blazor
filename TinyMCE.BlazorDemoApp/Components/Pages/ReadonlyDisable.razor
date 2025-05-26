@@ -7,16 +7,35 @@
 
 <h1>Readonly and disable</h1>
 
-<Editor
-  ApiKey="@Configuration["BlazorDemoApp:ApiKey"]"
-  @bind-Disable=_disable
-  @bind-Readonly=_readonly
-/>
-<input type="checkbox" @bind="_disable" /> disable
-<input type="checkbox" @bind="_readonly" /> readonly
+<div class="content">
+  <h3>Readonly</h3>
+  <Editor
+    ApiKey="@Configuration["BlazorDemoApp:ApiKey"]"
+    @bind-Readonly=_readonly
+    ScriptSrc="@scriptUrl"
+  />
+  <label><input type="checkbox" @bind="_readonly"> readonly</label>
+</div>
+
+<div class="content">
+  <h3>Disable</h3>
+  <Editor
+    ApiKey="@Configuration["BlazorDemoApp:ApiKey"]"
+    @bind-Disable=_disable
+    ScriptSrc="@scriptUrl"
+  />
+  <label><input type="checkbox" @bind="_disable"> disable</label>
+</div>
 
 @code {
+  private bool _oldTinyMce = false;
+  private string? scriptUrl;
   private bool _disable = true;
   private bool _readonly = true;
+
+  protected override void OnInitialized() {
+    var apiKey = Configuration["BlazorDemoApp:ApiKey"];
+    scriptUrl = _oldTinyMce ? $"https://cdn.tiny.cloud/1/{apiKey}/tinymce/7.5/tinymce.min.js" : null;
+  }
 }
 
