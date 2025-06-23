@@ -36,3 +36,21 @@ $ dotnet clean
 $ dotnet build
 ```
 
+### Building using docker
+
+```
+docker run -it --rm -v "$(pwd)":/app -w /app mcr.microsoft.com/dotnet/sdk:8.0 dotnet build
+```
+
+### Starting demo app in watch mode using docker
+
+```
+docker run -it --rm \
+  -v "$(pwd)":/app \
+  -w /app \
+  -p 5277:5277 \
+  -e DOTNET_USE_POLLING_FILE_WATCHER=true \
+  mcr.microsoft.com/dotnet/sdk:8.0 \
+  dotnet watch --project TinyMCE.BlazorDemoApp
+```
+
