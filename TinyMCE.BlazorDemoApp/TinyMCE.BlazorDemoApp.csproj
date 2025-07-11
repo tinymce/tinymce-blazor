@@ -13,7 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="TinyMCE" Version="7.4.1" />
+    <PackageReference Include="TinyMCE" Version="8.0.0" />
   </ItemGroup>
 
   <Target Name="RemoveLibDirectory" AfterTargets="Clean">
