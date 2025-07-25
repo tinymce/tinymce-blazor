@@ -1,0 +1,19 @@
+@page "/plaintext"
+@rendermode InteractiveServer
+@using System.ComponentModel.DataAnnotations
+@inject IConfiguration Configuration
+
+<PageTitle>Plain text</PageTitle>
+
+<h1>Editor Plain text binding</h1>
+
+<Editor
+  ApiKey="@Configuration["BlazorDemoApp:ApiKey"]"
+  @bind-Text=content
+/>
+
+<textarea style="width: 100%; height: 400px" @bind=content @bind:event="oninput"></textarea>
+
+@code {
+  private string content = "";
+}

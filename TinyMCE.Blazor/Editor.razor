@@ -1,4 +1,4 @@
-﻿@using System;
+@using System;
 @using System.Linq.Expressions
 @using Microsoft.AspNetCore.Components;
 @using Microsoft.AspNetCore.Components.Forms
@@ -24,6 +24,8 @@
   private string _text = "";
   private bool _setDisable = false;
   private bool _disable = false;
+  private bool _setReadonly = false;
+  private bool _readonly = false;
   private Dictionary<string, string> streamMap = new Dictionary<string, string>();
   private int _chunkSize = 16 * 1024;
   private bool _initialized = false;
@@ -97,7 +99,22 @@
       if (_disable != value)
       {
         _disable = value;
-        _ = ChangeMode(value);
+        _ = ChangeDisabled(value);
+      }
+    }
+  }
+
+  [Parameter]
+  public bool Readonly
+  {
+    get => _readonly;
+    set
+    {
+      _setReadonly = true;
+      if (_readonly != value)
+      {
+        _readonly = value;
+        _ = ChangeMode(value ? "readonly" : "design");
       }
     }
   }
@@ -211,7 +228,7 @@
   }
 
   /**
-    * Store user's ClassName: used as a base when add "modified, invalid, valid" on validation    
+    * Store user's ClassName: used as a base when add "modified, invalid, valid" on validation
     */
   public override Task SetParametersAsync(ParameterView parameters)
   {
@@ -244,9 +261,14 @@
     }
   }
 
-  protected async Task ChangeMode(bool disabled)
+  protected async Task ChangeMode(string mode)
   {
-    await JSRuntime.InvokeVoidAsync("tinymceBlazorWrapper.updateMode", Id, disabled);
+    await JSRuntime.InvokeVoidAsync("tinymceBlazorWrapper.updateMode", Id, mode);
+  }
+
+  protected async Task ChangeDisabled(bool disabled)
+  {
+    await JSRuntime.InvokeVoidAsync("tinymceBlazorWrapper.updateDisabled", Id, disabled);
   }
 
   protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -264,11 +286,16 @@
       blazorConf.Add("modelEvents", ModelEvents);
       Dictionary<string, object> merged = Merge(Conf, AdditionalAttributes);
       blazorConf.Add("conf", merged);
-      if (!_setDisable && merged.ContainsKey("readonly"))
+      if (!_setDisable && merged.ContainsKey("disabled"))
       {
-        _disable = merged["readonly"] is bool ? (bool)merged["readonly"] : false;
+        _disable = merged["disabled"] is bool ? (bool)merged["disabled"] : false;
       }
       blazorConf.Add("disabled", Disable);
+      if (!_setReadonly && merged.ContainsKey("readonly"))
+      {
+        _readonly = merged["readonly"] is bool ? (bool)merged["readonly"] : false;
+      }
+      blazorConf.Add("readonly", Readonly);
       // TBD: Load the events
         @*foreach (KeyValuePair<string, object> kvp in AdditionalAttributes)
       {

@@ -9,6 +9,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Set the default CloudChannel to `8`. #INT-3356
 
+## 2.1.0 - 2025-05-06
+
+### Added
+- New `Readonly` property that can be used to toggle the `readonly` mode.
+
+### Changed
+- The `Disabled` property now toggles the `disabled` option state instead of toggling the `readonly` mode.
+
 ## 2.0.0 - 2024-10-31
 
 ### Added

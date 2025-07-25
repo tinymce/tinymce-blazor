@@ -1,0 +1,22 @@
+@page "/readonly-disable"
+@rendermode InteractiveServer
+@using System.ComponentModel.DataAnnotations
+@inject IConfiguration Configuration
+
+<PageTitle>Readonly and disabled</PageTitle>
+
+<h1>Readonly and disable</h1>
+
+<Editor
+  ApiKey="@Configuration["BlazorDemoApp:ApiKey"]"
+  @bind-Disable=_disable
+  @bind-Readonly=_readonly
+/>
+<input type="checkbox" @bind="_disable" /> disable
+<input type="checkbox" @bind="_readonly" /> readonly
+
+@code {
+  private bool _disable = true;
+  private bool _readonly = true;
+}
+

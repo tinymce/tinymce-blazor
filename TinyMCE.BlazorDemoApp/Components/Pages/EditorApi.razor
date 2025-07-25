@@ -8,6 +8,19 @@
 
 <p>Shows various API interations with the tinymce editor instance.</p>
 
+<script>
+// Expose the configuration through a page global
+window.MyCustomNamespace = {
+  config: {
+    init_instance_callback: function (editor) {
+      editor.on('focus blur', function (e) {
+        DotNet.invokeMethodAsync('TinyMCE.BlazorDemoApp', 'LogEvent', e.type);
+      });
+    }
+  }
+};
+</script>
+
 <Editor
   @ref="editor"
   Inline=false
@@ -36,6 +49,12 @@
     {
         // Console.WriteLine("InsertContent");
         editor?.InsertContent("<b>Hello</b>");
+    }
+
+    [JSInvokable]
+    public static void LogEvent(string name)
+    {
+        Console.WriteLine("TinyMCE editor event: " + name);
     }
 }
 
