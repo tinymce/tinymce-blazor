@@ -4,9 +4,9 @@
 
 This package is a thin wrapper around [TinyMCE](https://github.com/tinymce/tinymce) to make it easier to use in a Blazor application.
 
-* If you need detailed documentation on TinyMCE, see: [TinyMCE Documentation](https://www.tiny.cloud/docs/tinymce/7/).
-* For the TinyMCE Blazor Quick Start, see: [TinyMCE Documentation - Blazor Integration](https://www.tiny.cloud/docs/tinymce/7/blazor-cloud/).
-* For the TinyMCE Blazor Technical Reference, see: [TinyMCE Documentation - TinyMCE Blazor Technical Reference](https://www.tiny.cloud/docs/tinymce/7/blazor-ref/).
+* If you need detailed documentation on TinyMCE, see: [TinyMCE Documentation](https://www.tiny.cloud/docs/tinymce/latest/).
+* For the TinyMCE Blazor Quick Start, see: [TinyMCE Documentation - Blazor Integration](https://www.tiny.cloud/docs/tinymce/latest/blazor-cloud/).
+* For the TinyMCE Blazor Technical Reference, see: [TinyMCE Documentation - TinyMCE Blazor Technical Reference](https://www.tiny.cloud/docs/tinymce/latest/blazor-ref/).
 
 ### Issues
 
