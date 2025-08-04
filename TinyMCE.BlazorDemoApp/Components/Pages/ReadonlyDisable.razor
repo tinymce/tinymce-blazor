@@ -10,6 +10,7 @@
 <div class="content">
   <h3>Readonly</h3>
   <Editor
+    License="gpl"
     ApiKey="@Configuration["BlazorDemoApp:ApiKey"]"
     @bind-Readonly=_readonly
     ScriptSrc="@scriptUrl"
@@ -20,6 +21,7 @@
 <div class="content">
   <h3>Disable</h3>
   <Editor
+    License="gpl"
     ApiKey="@Configuration["BlazorDemoApp:ApiKey"]"
     @bind-Disable=_disable
     ScriptSrc="@scriptUrl"
@@ -28,7 +30,7 @@
 </div>
 
 @code {
-  private bool _oldTinyMce = false;
+  private bool _oldTinyMce = true;
   private string? scriptUrl;
   private bool _disable = true;
   private bool _readonly = true;
