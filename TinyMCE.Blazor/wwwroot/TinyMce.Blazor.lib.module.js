@@ -10,9 +10,6 @@ const setEditorMode = (editor, mode) => {
   }
 };
 
-const setLegacyDisabledOption = (tinyConf) => {
-};
-
 const CreateScriptLoader = () => {
   let unique = 0;
 
@@ -185,13 +182,11 @@ window.tinymceBlazorWrapper = {
     }
 
     if (getTiny()) {
-      setLegacyDisabledOption(tinyConf);
       getTiny().init(tinyConf);
     } else {
       if (el && el.ownerDocument) {
         // inject tiny here
         window.tinymceBlazorLoader.load(el.ownerDocument, blazorConf.src, () => {
-          setLegacyDisabledOption(tinyConf);
           getTiny().init(tinyConf);
         });
       }
