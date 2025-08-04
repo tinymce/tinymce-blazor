@@ -1,9 +1,6 @@
 console.log('loading js tinymce-blazor');
 
-const isTinyMceVersionLessThan = (major, minor) =>
-  (typeof tinymce !== 'undefined' && (Number(tinymce.majorVersion) < major || Number(tinymce.minorVersion.split('.')[0]) < minor));
-
-const hasDisabledSupport = () => !isTinyMceVersionLessThan(7, 6);
+const hasDisabledSupport = (editor) => typeof editor.options?.set === 'function' && editor.options.isRegistered('disabled');
 
 const setEditorMode = (editor, mode) => {
   if (editor.mode && typeof editor.mode.set === 'function') {
@@ -14,9 +11,6 @@ const setEditorMode = (editor, mode) => {
 };
 
 const setLegacyDisabledOption = (tinyConf) => {
-  if (!hasDisabledSupport()) {
-    tinyConf.readonly = tinyConf.disabled || tinyConf.readonly;
-  }
 };
 
 const CreateScriptLoader = () => {
@@ -133,7 +127,7 @@ window.tinymceBlazorWrapper = {
   },
   updateDisabled: (id, disable) => {
     const tiny = getTiny().get(id);
-    if (hasDisabledSupport()) {
+    if (hasDisabledSupport(tiny)) {
       if (tiny.options && typeof tiny.options.set === 'function') {
         tiny.options.set('disabled', disable);
       } else {
@@ -173,6 +167,10 @@ window.tinymceBlazorWrapper = {
     tinyConf.target = el;
     tinyConf._setup = tinyConf.setup;
     tinyConf.setup = (editor) => {
+      if (!hasDisabledSupport(editor) && tinyConf.disabled && editor.mode && typeof editor.mode.set === 'function') {
+        editor.mode.set('readonly');
+      }
+
       tinyEventHandler.bindEvent(editor, 'init', (e) => dotNetRef.invokeMethodAsync('GetValue').then(value => { editor.setContent(value); }));
       tinyEventHandler.bindEvent(editor, 'change', (e) => { dotNetRef.invokeMethodAsync('OnChange'); });
       tinyEventHandler.bindEvent(editor, 'input', (e) => { dotNetRef.invokeMethodAsync('OnInput'); });
