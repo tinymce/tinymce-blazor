@@ -125,11 +125,7 @@ window.tinymceBlazorWrapper = {
   updateDisabled: (id, disable) => {
     const tiny = getTiny().get(id);
     if (hasDisabledSupport(tiny)) {
-      if (tiny.options && typeof tiny.options.set === 'function') {
-        tiny.options.set('disabled', disable);
-      } else {
-        setEditorMode(tiny, disable ? 'disabled' : 'design');
-      }
+      tiny.options.set('disabled', disable);
     } else {
       setEditorMode(tiny, disable ? 'readonly' : 'design');
     }
