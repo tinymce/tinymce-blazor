@@ -2,7 +2,7 @@
 
 ## About
 
-Official Blazor component for [TinyMCE](https://github.com/tinymce/tinymce) rich text editor. It makes integrating TinyMCE into Blazor applications easy and seamless. It automatically pulls `tinymce` from the Tiny Cloud CDN unless configured to use a different setup, such as self-hosting the [tinymce NPM package](https://www.npmjs.com/package/tinymce).
+Official Blazor component for TinyMCE, the rich text editor. It wraps TinyMCE as a Blazor `<Editor />` component. By default, it pulls TinyMCE from the Tiny Cloud CDN unless configured to use a different setup, such as self-hosting the [tinymce NPM package](https://www.npmjs.com/package/tinymce).
 
 ## Quickstart
 
