@@ -8,25 +8,23 @@ Official Blazor component for TinyMCE, the rich text editor. It wraps TinyMCE as
 
 ### Cloud CDN
 
-In your Blazor project:
-
 1. [Sign up for a Tiny Cloud account](https://www.tiny.cloud/pricing/) to receive a Tiny Cloud API key.
-2. `dotnet add package TinyMCE.Blazor`
-3. Include the following code:
+1. Then in your Blazor project:
+    1. Run `dotnet add package TinyMCE.Blazor`
+    1. Include the following code:
 
-```razor
-@using TinyMCE.Blazor
+        ```razor
+        @using TinyMCE.Blazor
 
-<Editor ApiKey="your-api-key"
-        @bind-Value="content"
-        Conf="@(new Dictionary<string, object> { { "plugins", "lists link image table code help wordcount" } })" />
+        <Editor ApiKey="your-api-key"
+                @bind-Value="content"
+                Conf="@(new Dictionary<string, object> { { "plugins", "lists link image table code help wordcount" } })" />
 
-@code {
-    private string content = "<p>Initial content</p>";
-}
-```
-
-4. Update the `ApiKey` parameter on the `Editor` component to include your Tiny Cloud API key.
+        @code {
+            private string content = "<p>Initial content</p>";
+        }
+        ```
+    1. Update the `ApiKey` parameter on the `Editor` component to include your Tiny Cloud API key.
 
 For more information: [Using TinyMCE with Blazor - Cloud CDN](https://www.tiny.cloud/docs/tinymce/8/blazor-cloud/).
 
