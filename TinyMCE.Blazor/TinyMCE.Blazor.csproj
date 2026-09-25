@@ -2,10 +2,10 @@
   <PropertyGroup>
     <PackageId>TinyMCE.Blazor</PackageId>
     <Version>2.2.1</Version>
-    <Authors>Tiny</Authors>
-    <Company>Tiny</Company>
-    <PackageTags>TinyMCE;RTE;Blazor;Component;Rich;Text;Editor;rich-text-editor</PackageTags>
-    <Description>This package is an official wrapper around TinyMCE to facilitate its use in Blazor applications. TinyMCE is a rich text editing platform and the most advanced WYSIWYG HTML editor designed to simplify website content creation.</Description>
+    <Authors>Ephox Corporation DBA Tiny Technologies, Inc.</Authors>
+    <Company>Ephox Corporation DBA Tiny Technologies, Inc.</Company>
+    <PackageTags>tinymce;blazor;component;wysiwyg;rich-text-editor;html;dotnet;razor;contenteditable;blazor-component;text-editor</PackageTags>
+    <Description>Official Blazor component for TinyMCE rich text editor.</Description>
     <TargetFrameworks>net8.0</TargetFrameworks>
     <RazorLangVersion>3.0</RazorLangVersion>
     <RepositoryUrl>https://github.com/tinymce/tinymce-blazor</RepositoryUrl>
