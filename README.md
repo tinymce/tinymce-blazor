@@ -2,7 +2,7 @@
 
 ## About
 
-Official Blazor component for TinyMCE, the rich text editor. It wraps TinyMCE as a Blazor `<Editor />` component. By default, it pulls TinyMCE from the Tiny Cloud CDN unless configured to use a different setup, such as self-hosting the [tinymce NPM package](https://www.npmjs.com/package/tinymce).
+Official Blazor component for TinyMCE, the rich text editor. It wraps TinyMCE as a Blazor `<Editor />` component. By default, it pulls TinyMCE from the Tiny Cloud CDN unless configured to use a different setup, such as self-hosting the [tinymce Nuget package](https://www.nuget.org/packages/TinyMCE/).
 
 ## Quickstart
 
@@ -26,16 +26,16 @@ Official Blazor component for TinyMCE, the rich text editor. It wraps TinyMCE as
         ```
     1. Update the `ApiKey` parameter on the `Editor` component to include your Tiny Cloud API key.
 
-For more information: [Using TinyMCE with Blazor - Cloud CDN](https://www.tiny.cloud/docs/tinymce/8/blazor-cloud/).
+For more information: [Using TinyMCE with Blazor - Cloud CDN](https://www.tiny.cloud/docs/tinymce/latest/blazor-cloud/).
 
-### Self hosted via NPM package
+### Self hosted
 
-Using TinyMCE from NPM in a Blazor project requires a couple of extra steps. See the documentation for more information: [Using TinyMCE with Blazor - Self hosted via NPM](https://www.tiny.cloud/docs/tinymce/8/blazor-pm/).
+Using TinyMCE from Nuget in a Blazor project requires a couple of extra steps. See the documentation for more information: [Using TinyMCE with Blazor - Self hosted](https://www.tiny.cloud/docs/tinymce/latest/blazor-pm/).
 
 ## Detailed documentation
 
-* [TinyMCE Blazor Technical Reference](https://www.tiny.cloud/docs/tinymce/8/blazor-ref/).
-* [TinyMCE Documentation](https://www.tiny.cloud/docs/tinymce/8/).
+* [TinyMCE Blazor Technical Reference](https://www.tiny.cloud/docs/tinymce/latest/blazor-ref/).
+* [TinyMCE Documentation](https://www.tiny.cloud/docs/tinymce/latest/).
 
 ## Issues
 
@@ -45,4 +45,4 @@ Have you found an issue with `tinymce-blazor` or do you have a feature request? 
 
 `tinymce-blazor` is licensed under the MIT License. See the LICENSE.txt file for details.
 
-Depending on use case, the TinyMCE core editor can be used under either GPL-2.0-or-later or a commercial license. See the [tinymce package](https://www.npmjs.com/package/tinymce) for details.
+Depending on use case, the TinyMCE core editor can be used under either GPL-2.0-or-later or a commercial license. See the [tinymce package](https://www.nuget.org/packages/TinyMCE/) for details.
