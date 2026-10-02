@@ -10,4 +10,4 @@ Once the new package has been published, `nuget.org` will revert the documentati
 2. Open the `TinyMCE.Blazor` package
 3. Click on `Manage package`
 4. Open up the `Documentation` section
-5. You can use the link to the github repo `README.md` at htt◊ps://raw.githubusercontent.com/tinymce/tinymce-blazor/master/README.md
+5. You can use the link to the github repo `README.md` at https://raw.githubusercontent.com/tinymce/tinymce-blazor/master/README.md
