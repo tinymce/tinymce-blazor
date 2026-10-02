@@ -4,7 +4,7 @@
     <Version>2.2.1</Version>
     <Authors>Ephox Corporation DBA Tiny Technologies, Inc.</Authors>
     <Company>Ephox Corporation DBA Tiny Technologies, Inc.</Company>
-    <PackageTags>tinymce;blazor;component;wysiwyg;rich-text-editor;html;dotnet;razor;contenteditable;blazor-component;text-editor</PackageTags>
+    <PackageTags>tinymce;blazor;component;editor;wysiwyg;rich-text-editor;html;dotnet;razor;contenteditable;blazor-component;text-editor</PackageTags>
     <Description>Official Blazor component for TinyMCE rich text editor.</Description>
     <TargetFrameworks>net8.0</TargetFrameworks>
     <RazorLangVersion>3.0</RazorLangVersion>
