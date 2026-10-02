@@ -1,4 +1,3 @@
-
 # Contributing
 
 External contributors are free to submit PRs against the `master` branch.
