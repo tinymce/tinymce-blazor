@@ -43,6 +43,6 @@ Have you found an issue with `tinymce-blazor` or do you have a feature request? 
 
 ## License
 
-`tinymce-blazor` is licensed under the MIT License. See the LICENSE.txt file for details.
+`tinymce-blazor` is licensed under the MIT License. See the [LICENSE.txt](https://github.com/tinymce/tinymce-blazor/blob/master/LICENSE.txt) file for details.
 
 Depending on use case, the TinyMCE core editor can be used under either GPL-2.0-or-later or a commercial license. See the [tinymce package](https://www.nuget.org/packages/TinyMCE/) for details.
