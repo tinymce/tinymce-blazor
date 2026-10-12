@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk.Razor">
   <PropertyGroup>
     <PackageId>TinyMCE.Blazor</PackageId>
-    <Version>2.2.1</Version>
+    <Version>2.2.2</Version>
     <Authors>Ephox Corporation DBA Tiny Technologies, Inc.</Authors>
     <Company>Ephox Corporation DBA Tiny Technologies, Inc.</Company>
     <PackageTags>tinymce;blazor;component;editor;wysiwyg;rich-text-editor;html;dotnet;razor;contenteditable;blazor-component;text-editor</PackageTags>
